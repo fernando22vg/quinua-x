@@ -7,7 +7,12 @@
       "Bash(git config *)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git remote *)"
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(mv \"c:\\\\Users\\\\jose-\\\\Downloads\\\\quinoa-x \\(3\\)\\\\.env.local\" \"c:\\\\Users\\\\jose-\\\\Downloads\\\\quinoa-x \\(3\\)\\\\.env\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\jose-\\Downloads\\quinoa-x (3)"
     ]
   }
 }
