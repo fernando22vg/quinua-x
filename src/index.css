@@ -66,14 +66,14 @@
     scrollbar-width: none;
 }
 
-/* Force input text color (overrides browser defaults in Chrome/Edge) */
-input, textarea {
+/* Force input text color only in dark AI chat context */
+.ai-chat-input {
   color: #f4f4f5 !important;
   -webkit-text-fill-color: #f4f4f5 !important;
   caret-color: #10b981 !important;
 }
 
-input::placeholder, textarea::placeholder {
+.ai-chat-input::placeholder {
   color: #52525b !important;
   -webkit-text-fill-color: #52525b !important;
 }
