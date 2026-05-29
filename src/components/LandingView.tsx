@@ -911,12 +911,12 @@ export default function LandingView({ onNavigate, language, setLanguage, userMod
               <div className="col-span-2 bg-gradient-to-br from-emerald-950/30 to-[#102033] p-4 rounded-xl border border-[#D9A441]/20 text-center relative overflow-hidden mt-2">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#3F7D4A]/5 blur-[40px] pointer-events-none"></div>
                 <div className="text-[10px] font-mono text-[#3F7D4A]">TOTAL ESTIMATE BUDGET</div>
-                <p className="text-3xl font-extrabold text-[#102033] mt-1.5 flex items-baseline justify-center gap-2">
-                  <span className="text-base text-[#52616B] font-normal">Bs.</span>
+                <p className="text-3xl font-extrabold text-white mt-1.5 flex items-baseline justify-center gap-2">
+                  <span className="text-base text-[#EFE3C8] font-normal">Bs.</span>
                   {activeQuote.bob.toLocaleString()}
                 </p>
-                <div className="text-xs text-[#52616B] font-mono mt-1 pt-2 border-t border-[#B85C38]/10/50 inline-block">
-                  <span className="font-bold text-[#52616B]">Total:</span> ${activeQuote.usd.toLocaleString()} USD
+                <div className="text-xs text-[#EFE3C8] font-mono mt-1 pt-2 border-t border-[#EFE3C8]/20 inline-block">
+                  <span className="font-bold text-[#EFE3C8]">Total:</span> ${activeQuote.usd.toLocaleString()} USD
                 </div>
               </div>
             </div>
