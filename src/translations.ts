@@ -406,7 +406,7 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     modeChangeNote: "*Puedes cambiar esto más tarde en la barra de navegación superior."
   },
   ay: {
-    heroSlogan: "Atómica Yatxatawi Yapunakataki",
+    heroSlogan: "Yapu Uta Atómica Suma",
     heroDesc: "Suma isótopos, gamma mutación ukat IA yanapt'awi apnaqañataki jupha ukhamarak yaqha yapunaka waña, juyphi ukhamarak jayu pachanakan jark'añataki.",
     navHome: "Uta",
     navDashboard: "Tupu Uñjaña",
