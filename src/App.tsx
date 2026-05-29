@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import Sidebar from "./components/Sidebar";
 import LandingView from "./components/LandingView";
+import Navbar from "./components/Navbar";
 import OverviewDashboard from "./components/OverviewDashboard";
 import SatelliteMapView from "./components/SatelliteMapView";
 import IsotopeExplorer from "./components/IsotopeExplorer";
@@ -10,7 +10,7 @@ import BasicDashboard from "./components/basic/BasicDashboard";
 import { INITIAL_SECTORS } from "./data";
 import { Sector, Message } from "./types";
 import { Language, TRANSLATIONS, t } from "./translations";
-import { Bot, User, Send, MessageSquare, X, RefreshCw, Globe, ShieldCheck } from "lucide-react";
+import { Bot, User, Send, MessageSquare, X, RefreshCw, Sparkles, Globe, ShieldCheck, MapPin } from "lucide-react";
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<string>("landing");
@@ -27,6 +27,10 @@ export default function App() {
 
   const [userMode, setUserMode] = useState<"basic" | "expert" | null>(null);
   const [showModeModal, setShowModeModal] = useState<boolean>(false);
+  
+  // Transition Toast State
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [transitioningPage, setTransitioningPage] = useState<string | null>(null);
 
   useEffect(() => {
     const savedMode = localStorage.getItem("qx-user-mode");
@@ -36,15 +40,49 @@ export default function App() {
     } else {
       setShowModeModal(true);
     }
+    
+    const savedLang = localStorage.getItem("qx-lang");
+    if (savedLang) {
+      setLanguage(savedLang as Language);
+    }
   }, []);
 
+  const showToast = (message: string) => {
+    setToastMessage(message);
+    setTimeout(() => setToastMessage(null), 2500);
+  };
+
+  const navigateToPage = (targetPath: string) => {
+    if (targetPath === currentPage) return;
+    setTransitioningPage(targetPath);
+    // Let fade out complete slightly before full load
+    setTimeout(() => {
+       setCurrentPage(targetPath);
+       setTransitioningPage(null);
+    }, 150);
+  };
+
   const handleModeSelect = (mode: "basic" | "expert") => {
+    const isNew = userMode === null;
     setUserMode(mode);
     localStorage.setItem("qx-user-mode", mode);
     setShowModeModal(false);
-    if (mode === "basic") {
-      setCurrentPage("basic-dashboard");
+    
+    if (!isNew) {
+      showToast(mode === "expert" ? tr('expertModeSwitch', 'Switching to Expert Scientific View') : tr('basicModeSwitch', 'Switching to Basic Agricultural View'));
     }
+     
+    if (mode === "basic") {
+      navigateToPage("basic-dashboard");
+    } else if (mode === "expert" && currentPage === "basic-dashboard") {
+      navigateToPage("overview");
+    }
+  };
+
+  const handleLanguageSelect = (lang: Language) => {
+    setLanguage(lang);
+    localStorage.setItem("qx-lang", lang);
+    showToast(t(lang, 'langChange', 'Language changed'));
   };
 
   const handleResetMode = () => {
@@ -198,6 +236,20 @@ export default function App() {
     }, 1100);
   };
 
+  const handleDemoMode = () => {
+    // Hackathon Demo Sequence
+    // 1. Select a high-impact location (Sector 4 - Calmarka)
+    setSelectedSectorId(4);
+    // 2. Adjust nutrition to simulate a sudden drop (Simulate isotope data)
+    handleAdjustNutrition(4, -2.5);
+    // 3. Jump to satellite map to show the issue & GPS style analysis
+    setCurrentPage("satellite");
+    // 4. Open AI Chat and simulate generating recommendation
+    setIsChatOpen(true);
+    setTimeout(() => {
+      handleSendChatMessage("Analyze the recent isotopic drop in Sector 4 and recommend GammaGrow treatments.");
+    }, 1500);
+  };
 
   const activeAlertsList = sectors.flatMap((s) => s.alerts);
   const activeAlertsCount = activeAlertsList.length;
@@ -205,90 +257,23 @@ export default function App() {
   return (
     <div className="flex bg-[#09090b] text-zinc-150 font-sans h-screen overflow-hidden relative">
       
-      {/* Dynamic persistent global multi-language navbar flag layout */}
-      <div className="fixed top-0 left-0 w-full z-55 bg-zinc-950/90 backdrop-blur-md border-b border-zinc-850 px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-4">
-        
-        {/* Left: Logo */}
-        <div className="flex items-center justify-between w-full sm:w-auto">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setCurrentPage("landing")}>
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center p-[1px]">
-              <div className="w-full h-full bg-zinc-950 rounded-[10px] flex items-center justify-center font-bold text-sm tracking-tighter text-emerald-400">
-                QX
-              </div>
-            </div>
-            <div>
-              <h1 className="text-sm font-bold tracking-wider text-zinc-100 uppercase">QUINOA-X</h1>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Controls */}
-        <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 w-full sm:w-auto">
-          {/* Mode Switcher */}
-          <div className="flex bg-zinc-900 shadow-sm border border-zinc-800 rounded-lg p-1 min-h-[44px] items-center space-x-1">
-             <button 
-                onClick={() => handleModeSelect("basic")}
-                className={`px-3 py-1.5 rounded text-[11px] font-bold font-mono transition-colors ${userMode === 'basic' ? 'bg-emerald-900/50 text-emerald-400 border border-emerald-800/50' : 'text-zinc-500 hover:text-zinc-300'}`}
-              >
-                BASIC
-              </button>
-              <button 
-                onClick={() => handleModeSelect("expert")}
-                className={`px-3 py-1.5 rounded text-[11px] font-bold font-mono transition-colors ${userMode === 'expert' ? 'bg-purple-900/50 text-purple-400 border border-purple-800/50' : 'text-zinc-500 hover:text-zinc-300'}`}
-              >
-                EXPERT
-              </button>
-              <button 
-                onClick={handleResetMode}
-                className="px-2 py-1.5 rounded text-[11px] font-bold font-mono text-zinc-500 hover:text-red-400 border border-transparent hover:border-red-900/50 transition-colors ml-1"
-                title="Show Mode Selector Again"
-              >
-                ↻ RESET
-              </button>
-          </div>
-
-          {/* Language Selector */}
-          <div className="flex items-center gap-1.5 bg-zinc-900 shadow-sm border border-zinc-800 rounded-lg px-3 py-2 min-h-[44px] hover:border-emerald-500 transition-colors w-full sm:w-auto justify-center">
-            <Globe className="w-4 h-4 text-emerald-400" />
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value as Language)}
-              className="bg-transparent text-xs font-mono font-bold text-zinc-300 focus:outline-none cursor-pointer uppercase [&>option]:bg-zinc-900"
-            >
-              <option value="en">English 🇬🇧</option>
-              <option value="es">Español 🇧🇴</option>
-              <option value="ay">Aymara 🇧🇴</option>
-              <option value="ru">Русский 🇷🇺</option>
-            </select>
-          </div>
-
-          {/* Start Analysis Button */}
-          <button
-            onClick={() => setCurrentPage("overview")}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 min-h-[44px] bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-zinc-950 font-mono text-xs font-bold px-4 rounded-lg shadow-sm transition-all cursor-pointer border border-emerald-400/50"
-          >
-            <ShieldCheck className="w-4 h-4" />
-            <span className="whitespace-nowrap">{tr('ctaEnter', 'START ANALYSIS')}</span>
-          </button>
-
-        </div>
-      </div>
-
-      {/* Interactive sidebar navigation core */}
-      {currentPage !== "landing" && (
-        <Sidebar
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-          activeAlertsCount={activeAlertsCount}
-          language={language}
-          userMode={userMode}
-        />
-      )}
+      {/* Dynamic persistent global multi-language navbar layout */}
+      <Navbar
+        currentPage={currentPage}
+        setCurrentPage={navigateToPage}
+        userMode={userMode}
+        handleModeSelect={handleModeSelect}
+        handleResetMode={handleResetMode}
+        language={language}
+        setLanguage={handleLanguageSelect}
+        handleDemoMode={handleDemoMode}
+        activeAlertsCount={activeAlertsCount}
+      />
 
       {/* Primary viewport switch */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+      <main className={`flex-1 flex flex-col h-screen overflow-hidden pt-[72px] transition-soft ${transitioningPage ? 'opacity-0 translate-y-2 scale-98' : 'opacity-100 translate-y-0 scale-100'}`}>
         {currentPage === "landing" && (
-          <LandingView onNavigate={setCurrentPage} language={language} setLanguage={setLanguage} userMode={userMode} setMode={handleModeSelect} />
+          <LandingView onNavigate={navigateToPage} language={language} setLanguage={handleLanguageSelect} userMode={userMode} setMode={handleModeSelect} />
         )}
 
         {currentPage === "basic-dashboard" && (
@@ -330,11 +315,21 @@ export default function App() {
         )}
       </main>
 
+      {/* Transition Toast */}
+      {toastMessage && (
+        <div className="fixed top-24 left-1/2 z-[1000] pointer-events-none animate-toast">
+           <div className="bg-zinc-900 border border-zinc-700 text-white px-6 py-3 rounded-full shadow-2xl backdrop-blur-md flex items-center gap-3">
+              <Sparkles className="w-4 h-4 text-emerald-400" />
+              <span className="text-sm font-bold">{toastMessage}</span>
+           </div>
+        </div>
+      )}
+
       {/* Floating Action Quick Navigation bar */}
       {currentPage === "landing" && (
-        <div className="fixed bottom-6 left-6 bg-zinc-950/90 border border-zinc-850 p-2 text-zinc-100 rounded-full flex gap-3 shadow-2xl z-50">
+        <div className="fixed bottom-6 left-6 bg-zinc-950/90 border border-zinc-850 p-2 text-zinc-100 rounded-full flex gap-3 shadow-2xl z-50 animate-fade-in">
           <button
-            onClick={() => setCurrentPage("overview")}
+            onClick={() => navigateToPage("overview")}
             className="px-5 py-2.5 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 font-bold text-xs text-zinc-950 hover:scale-105 active:scale-95 transition-all cursor-pointer"
           >
             {tr('ctaEnter', 'ENTER')}
@@ -463,8 +458,8 @@ export default function App() {
 
       {/* OVERLAY MODAL FOR FIRST LOAD (Requirement 1) */}
       {showModeModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
-          <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 md:p-8 max-w-lg w-full shadow-2xl relative">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[9999] flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-6 md:p-8 max-w-lg w-full shadow-2xl relative animate-slide-up">
             <div className="text-center mb-8">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 mx-auto flex items-center justify-center p-[1px] mb-4">
                 <div className="w-full h-full bg-zinc-950 rounded-[10px] flex items-center justify-center text-emerald-400">

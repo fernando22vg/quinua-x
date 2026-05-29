@@ -1,5 +1,72 @@
 @import "tailwindcss";
 
+@theme {
+  --color-zinc-950: #102033;
+  --color-zinc-900: #17273D;
+  --color-zinc-800: #3B3A73;
+  --color-zinc-150: #F8FAFC;
+  --color-zinc-300: #F8FAFC;
+  --color-zinc-400: #CBD5E1;
+  --color-emerald-400: #3F7D4A;
+  --color-cyan-400: #2F80A8;
+  --color-purple-400: #3B3A73;
+  --color-amber-400: #D99A2B;
+  --color-red-400: #B13A2E;
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .animate-slide-up {
+    animation: slideUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .animate-toast {
+    animation: toastSlide 2s ease-in-out forwards;
+  }
+  .transition-soft {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in, .animate-slide-up, .animate-toast {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .transition-soft {
+      transition: none !important;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes toastSlide {
+  0% { opacity: 0; transform: translateY(-20px) translateX(-50%); }
+  10% { opacity: 1; transform: translateY(0) translateX(-50%); }
+  90% { opacity: 1; transform: translateY(0) translateX(-50%); }
+  100% { opacity: 0; transform: translateY(-20px) translateX(-50%); }
+}
+
+/* Scrollbar hiding for clean UI */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Force input text color (overrides browser defaults in Chrome/Edge) */
 input, textarea {
   color: #f4f4f5 !important;
   -webkit-text-fill-color: #f4f4f5 !important;

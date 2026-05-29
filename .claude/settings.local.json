@@ -9,7 +9,15 @@
       "Bash(git commit -m ' *)",
       "Bash(git remote *)",
       "Bash(git push *)",
-      "Bash(mv \"c:\\\\Users\\\\jose-\\\\Downloads\\\\quinoa-x \\(3\\)\\\\.env.local\" \"c:\\\\Users\\\\jose-\\\\Downloads\\\\quinoa-x \\(3\\)\\\\.env\")"
+      "Bash(mv \"c:\\\\Users\\\\jose-\\\\Downloads\\\\quinoa-x \\(3\\)\\\\.env.local\" \"c:\\\\Users\\\\jose-\\\\Downloads\\\\quinoa-x \\(3\\)\\\\.env\")",
+      "Read(//c/Users/jose-/Downloads/quinoa-x \\(6\\)/**)",
+      "Read(//c/Users/jose-/Downloads/quinoa-x \\(6\\)/src/**)",
+      "Read(//c/Users/jose-/Downloads/quinoa-x \\(6\\)/src/components/**)",
+      "Bash(cp \"c:\\\\Users\\\\jose-\\\\Downloads\\\\quinoa-x \\(6\\)\\\\index.html\" \"c:\\\\Users\\\\jose-\\\\Downloads\\\\quinoa-x \\(3\\)\\\\index.html\")",
+      "Bash(cp \"c:\\\\Users\\\\jose-\\\\Downloads\\\\quinoa-x \\(6\\)\\\\package.json\" \"c:\\\\Users\\\\jose-\\\\Downloads\\\\quinoa-x \\(3\\)\\\\package.json\")",
+      "Bash(cp \"c:\\\\Users\\\\jose-\\\\Downloads\\\\quinoa-x \\(6\\)\\\\tsconfig.json\" \"c:\\\\Users\\\\jose-\\\\Downloads\\\\quinoa-x \\(3\\)\\\\tsconfig.json\")",
+      "Bash(cp \"c:\\\\Users\\\\jose-\\\\Downloads\\\\quinoa-x \\(6\\)\\\\vite.config.ts\" \"c:\\\\Users\\\\jose-\\\\Downloads\\\\quinoa-x \\(3\\)\\\\vite.config.ts\")",
+      "Bash(cp \"c:\\\\Users\\\\jose-\\\\Downloads\\\\quinoa-x \\(6\\)\\\\metadata.json\" \"c:\\\\Users\\\\jose-\\\\Downloads\\\\quinoa-x \\(3\\)\\\\metadata.json\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\jose-\\Downloads\\quinoa-x (3)"

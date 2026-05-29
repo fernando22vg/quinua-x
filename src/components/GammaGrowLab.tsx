@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { 
   Atom, Zap, Cpu, Award, ShieldAlert, Sparkles, RefreshCw, AlertCircle, 
-  HelpCircle, ChevronRight, CheckCircle2, TrendingUp, FlaskConical, Scale, Dna
+  HelpCircle, ChevronRight, CheckCircle2, TrendingUp, FlaskConical, Scale, Dna,
+  History, Download, ChevronLeft, Bot
 } from "lucide-react";
 import { Language, TRANSLATIONS } from "../translations";
 import { calculateQuinoaGammaExperimentalModel } from "../models/quinoaGammaExperimentalModel";
@@ -20,7 +21,7 @@ interface SeedVariant {
 }
 
 const NATIVE_SEEDS: SeedVariant[] = [
-  { id: "quinoa", name: "Royal Quinoa (Quinua Real)", baseDose: 150, sensitivity: "MEDIUM", growthCycle: "140 days" }, // Note: baseDose is Gy now for quinoa
+  { id: "quinoa", name: "Royal Quinoa (Quinua Real)", baseDose: 150, sensitivity: "MEDIUM", growthCycle: "140 days" },
   { id: "potato", name: "Imilla Potato (Papa Nativa)", baseDose: 8.2, sensitivity: "RESISTANT", growthCycle: "110 days" },
   { id: "tarwi", name: "Tarwi Lupin (Chocho)", baseDose: 3.1, sensitivity: "HIGH", growthCycle: "160 days" },
   { id: "coffee", name: "Yungas Premium Coffee", baseDose: 12.0, sensitivity: "RESISTANT", growthCycle: "240 days" },
@@ -47,34 +48,48 @@ export default function GammaGrowLab({ language, userMode }: GammaGrowLabProps) 
   };
 
   const [activeSeedId, setActiveSeedId] = useState<string>("quinoa");
-  const [radiationDose, setRadiationDose] = useState<number>(150); // Initial dose is 150 Gy for Quinoa
+  const [radiationDoseGy, setRadiationDoseGy] = useState<number>(150);
+  const [doseUnit, setDoseUnit] = useState<"Gy" | "kGy">("Gy");
   const [targetTrait, setTargetTrait] = useState<string>("drought");
   const [isSimulating, setIsSimulating] = useState<boolean>(false);
   const [simulationResult, setSimulationResult] = useState<any | null>(null);
   const [quinoaResult, setQuinoaResult] = useState<any | null>(null);
+  const [history, setHistory] = useState<any[]>([]);
   const [showExplanation, setShowExplanation] = useState<boolean>(false);
+  const [showHistory, setShowHistory] = useState<boolean>(false);
 
-  const selectedSeed = NATIVE_SEEDS.find(s => s.id === activeSeedId) || NATIVE_SEEDS[0];
+  // Synchronize internal doses
   const isQuinoa = activeSeedId === "quinoa";
+  const selectedSeed = NATIVE_SEEDS.find(s => s.id === activeSeedId) || NATIVE_SEEDS[0];
+
+  // Derived display dosifications
+  const displayDose = doseUnit === "Gy" ? radiationDoseGy : radiationDoseGy / 1000;
+
+  const handleDoseChange = (val: number) => {
+     if (doseUnit === "Gy") setRadiationDoseGy(val);
+     else setRadiationDoseGy(val * 1000);
+  };
 
   const handleSimulateMutation = () => {
     setIsSimulating(true);
-    setSimulationResult(null);
-    setQuinoaResult(null);
 
     setTimeout(() => {
+      let resultObj: any = null;
+
       if (isQuinoa) {
-        const result = calculateQuinoaGammaExperimentalModel({ doseGy: radiationDose, mode: userMode });
-        setQuinoaResult(result);
+        resultObj = calculateQuinoaGammaExperimentalModel({ doseGy: radiationDoseGy, mode: userMode });
+        setQuinoaResult(resultObj);
+        setSimulationResult(null);
       } else {
+        const doseKGy = radiationDoseGy / 1000;
         const optimalDose = selectedSeed.baseDose;
-        const difference = Math.abs(radiationDose - optimalDose);
+        const difference = Math.abs(doseKGy - optimalDose);
         
         let successChance = 100 - (difference * 12);
         successChance = Math.max(10, Math.min(98, Math.round(successChance)));
 
-        let integrity = 100 - (radiationDose * 4.2);
-        if (radiationDose > 9.5) integrity -= (radiationDose - 9) * 8;
+        let integrity = 100 - (doseKGy * 4.2);
+        if (doseKGy > 9.5) integrity -= (doseKGy - 9) * 8;
         integrity = Math.max(5, Math.min(100, Math.round(integrity)));
 
         let yieldBonus = 0;
@@ -102,444 +117,393 @@ export default function GammaGrowLab({ language, userMode }: GammaGrowLabProps) 
           traitDetail = "Saponin compound molecular chain density modified, repelling native bird species and high-altitude leaf beetles.";
         }
 
-        setSimulationResult({
+        resultObj = {
           successChance,
           integrity,
           yieldBonus,
           traitName: traitDisplay,
           traitDetail,
           isLethal: integrity < 25,
-          cobalt60Frequency: `${(1.2 + (radiationDose * 0.15)).toFixed(2)} Exahertz`,
-          radiationAbsorptionFactor: `${Math.round(radiationDose * 124)} Gray/sec`
-        });
+          cobalt60Frequency: `${(1.2 + (doseKGy * 0.15)).toFixed(2)} Exahertz`,
+          radiationAbsorptionFactor: `${Math.round(doseKGy * 124)} Gray/sec`,
+          doseKGy,
+          doseGy: radiationDoseGy,
+          crop: selectedSeed.name
+        };
+        setSimulationResult(resultObj);
+        setQuinoaResult(null);
       }
 
+      // Add to history
+      setHistory(prev => [{ ...resultObj, isQuinoa, timestamp: new Date().toLocaleTimeString(), id: Math.random() }, ...prev].slice(0, 5));
       setIsSimulating(false);
     }, 1200);
   };
 
-  return (
-    <div id="gammagrow-lab-panel" className="flex-1 bg-zinc-950 text-zinc-100 overflow-y-auto pb-24 relative select-none">
-      <div className="absolute top-0 right-1/4 w-[350px] h-[350px] bg-purple-500/5 blur-[120px] rounded-full pointer-events-none"></div>
-      <div className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] bg-emerald-500/5 blur-[100px] rounded-full pointer-events-none"></div>
+  const handleDownloadReport = () => {
+     let content = `--- ${tr('jathaLabTitle', "Jatha K'anchay Lab")} REPORT ---\n${tr('cropTypeLabel', 'Crop')}: ${selectedSeed.name}\n${tr('doseLabel', 'Dose')}: ${radiationDoseGy} Gy (${radiationDoseGy/1000} kGy)\n\n`;
+     if (isQuinoa && quinoaResult) {
+        content += `${tr('experimentalValues', 'Experimental Results')}:\n- Germination (7d): ${quinoaResult.germination.day7Pct}%\n- Survival (30d): ${quinoaResult.growth.survivalPct}%\n- Bio Damage: ${quinoaResult.biologicalDamagePct}%\n- Mutation Prob: ${quinoaResult.usefulMutationProbabilityPct}%\n`;
+        content += `\nAnalysis: ${quinoaResult.classification.expertMessage}\n`;
+        content += `\nModel: ${quinoaResult.modelReference}`;
+     } else if (simulationResult) {
+        content += `${tr('experimentalValues', 'Experimental Results')}:\n- Mutation Coef: ${simulationResult.successChance}%\n- Chromosome Integrity: ${simulationResult.integrity}%\n- Target: ${simulationResult.traitName}\n`;
+        content += `\nAnalysis: ${simulationResult.traitDetail}\n`;
+     }
+     
+     const blob = new Blob([content], { type: 'text/plain' });
+     const url = URL.createObjectURL(blob);
+     const a = document.createElement('a');
+     a.href = url;
+     a.download = `jatha-lab-report-${selectedSeed.id}.txt`;
+     a.click();
+     URL.revokeObjectURL(url);
+  };
 
-      <div className="p-6 border-b border-zinc-900 bg-zinc-950/80 backdrop-blur-md sticky top-0 z-30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+  // Color mappings for Risk zones
+  const getRiskColor = (doseGy: number, maxDoseGy: number) => {
+     const ratio = doseGy / maxDoseGy;
+     if (ratio < 0.2) return 'bg-[#2F80A8]'; // Low
+     if (ratio < 0.5) return 'bg-[#3F7D4A]'; // Ideal 
+     if (ratio < 0.8) return 'bg-amber-400'; // High risk
+     return 'bg-[#B13A2E]'; // Lethal
+  };
+
+  const getRiskLabel = (doseGy: number, maxDoseGy: number) => {
+     const ratio = doseGy / maxDoseGy;
+     if (ratio < 0.2) return 'Low Effect';
+     if (ratio < 0.5) return 'Optimal Zone';
+     if (ratio < 0.8) return 'High Damage';
+     return 'Lethal';
+  };
+
+  const maxRiskDose = isQuinoa ? 350 : 25000;
+
+  return (
+    <div id="gammagrow-lab-panel" className="flex-1 bg-[#102033] text-[#F8FAFC] overflow-y-auto pb-24 relative select-none font-sans">
+      <div className="absolute top-0 right-1/4 w-[350px] h-[350px] bg-purple-500/5 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] bg-[#3F7D4A]/5 blur-[100px] rounded-full pointer-events-none"></div>
+
+      <div className="p-6 border-b border-[#17273D] bg-[#102033]/80 backdrop-blur-md sticky top-0 z-30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-purple-400">
-            <Atom className="w-4 h-4 text-purple-400 animate-spin-slow" />
-            <span>{tr('gammaEngineTitle', 'IAEA B-7 COMPLIANT MUTATION ENGINE')}</span>
+          <div className="flex items-center gap-2 text-xs font-mono text-[#8FAE7D] font-bold">
+            <Atom className="w-4 h-4 text-[#8FAE7D] animate-spin-slow" />
+            <span>{userMode === "expert" ? tr('gammaEngineTitle', 'IAEA B-7 COMPLIANT MUTATION ENGINE') : tr('jathaLabTitle', "Jatha K'anchay Lab")}</span>
           </div>
-          <h2 className="text-xl md:text-2xl font-bold font-sans tracking-tight text-zinc-100 mt-1">
-            {tr('gammaTitle', 'GammaGrow Mutation Lab')}
+          <h2 className="text-xl md:text-2xl font-bold font-sans tracking-tight text-[#F8FAFC] mt-1 transition-colors">
+            {tr('jathaLabTitle', "Jatha K'anchay Lab")}
           </h2>
-          <p className="text-xs text-zinc-400 font-mono mt-0.5 max-w-2xl">
-            {tr('gammaDesc', 'Pioneering safe, controlled atomic mutation breeding')}
+          <p className="text-xs text-[#CBD5E1] font-mono mt-0.5 max-w-2xl transition-colors">
+            {tr('jathaLabSubtitle', 'Gamma Irradiation Seed Improvement Simulator')}
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <span className="px-2.5 py-1 rounded bg-[#09090b] border border-zinc-900 text-[10.5px] font-mono text-emerald-400">
-            {tr('cobaltSourceStatus', 'Cobalt-60 Source: NOMINAL (98.2%)')}
-          </span>
-        </div>
+        {userMode === "expert" && (
+          <div className="flex items-center gap-3">
+            <span className="px-2.5 py-1 rounded bg-[#17273D] border border-[#3B3A73] text-[10.5px] font-mono text-[#3F7D4A] font-bold">
+              {tr('cobaltSourceStatus', 'Cobalt-60 Source: NOMINAL (98.2%)')}
+            </span>
+          </div>
+        )}
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 pt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative z-20">
+      <div className="max-w-[1600px] mx-auto px-4 lg:px-6 pt-8 grid grid-cols-1 xl:grid-cols-12 gap-8 items-start relative z-20">
         
-        <div className="lg:col-span-6 space-y-6">
-          <div className="bg-zinc-900/40 border border-zinc-850 rounded-2xl p-6">
-            <h3 className="text-sm font-mono font-bold text-zinc-250 uppercase flex items-center gap-2 mb-4">
-              <FlaskConical className="w-4 h-4 text-purple-400" />
-              {tr('labSetup', '1. Laboratory Settings Setup')}
-            </h3>
+        {/* Left Column: Controls */}
+        <div className="xl:col-span-4 space-y-6">
+          <div className="bg-[#17273D]/50 border border-[#3B3A73] rounded-2xl p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-bold text-[#F8FAFC] uppercase flex items-center gap-2">
+                <FlaskConical className="w-4 h-4 text-[#2F80A8]" />
+                {tr('labSetup', 'Laboratory Settings')}
+              </h3>
+              {userMode === "expert" && (
+                <div className="flex bg-[#102033] border border-[#3B3A73] rounded-lg p-0.5 items-center">
+                  <button onClick={() => setDoseUnit("Gy")} className={`px-2 py-1 text-[10px] font-bold font-mono rounded ${doseUnit === "Gy" ? 'bg-purple-900/50 text-purple-300' : 'text-[#64748B]'}`}>Gy</button>
+                  <button onClick={() => setDoseUnit("kGy")} className={`px-2 py-1 text-[10px] font-bold font-mono rounded ${doseUnit === "kGy" ? 'bg-purple-900/50 text-purple-300' : 'text-[#64748B]'}`}>kGy</button>
+                </div>
+              )}
+            </div>
 
             <div>
-              <label className="text-[10px] font-mono text-zinc-500 block uppercase mb-1.5">{tr('cropLabel', '1. TARGET NATIVE CROP')}</label>
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-[300px] overflow-y-auto pr-2 no-scrollbar">
+              <label className="text-[10px] font-mono font-bold text-[#64748B] block uppercase mb-2">{tr('cropLabel', '1. TARGET NATIVE CROP')}</label>
+              <div className="grid grid-cols-2 gap-2 max-h-[220px] overflow-y-auto pr-2 no-scrollbar">
                 {NATIVE_SEEDS.map((seed) => (
                   <button
                     key={seed.id}
                     onClick={() => {
-                       // if changing TO quinoa, set dose to 150 Gy.
-                      if (seed.id === "quinoa" && activeSeedId !== "quinoa") {
-                        setRadiationDose(150);
-                      } 
-                      // if changing FROM quinoa to generic, set dose to seed.baseDose kGy
-                      else if (activeSeedId === "quinoa" && seed.id !== "quinoa") {
-                        setRadiationDose(seed.baseDose);
-                      }
-                      // if changing between generic crops, also set dose to baseDose
-                      else if (activeSeedId !== "quinoa" && seed.id !== "quinoa") {
-                         setRadiationDose(seed.baseDose);
-                      }
+                      if (seed.id === "quinoa" && activeSeedId !== "quinoa") setRadiationDoseGy(150);
+                      else if (activeSeedId === "quinoa" && seed.id !== "quinoa") setRadiationDoseGy(seed.baseDose * 1000);
+                      else if (activeSeedId !== "quinoa" && seed.id !== "quinoa") setRadiationDoseGy(seed.baseDose * 1000);
+                      
                       setActiveSeedId(seed.id);
                       setSimulationResult(null);
                       setQuinoaResult(null);
+                      setShowHistory(false);
                     }}
-                    className={`p-3 rounded-xl border text-left transition-all text-xs cursor-pointer ${
+                    className={`p-2.5 rounded-xl border text-left transition-all text-xs cursor-pointer ${
                       activeSeedId === seed.id
-                        ? "bg-purple-950/30 border-purple-500 text-purple-300"
-                        : "bg-zinc-950 border-zinc-805 hover:border-zinc-700 hover:text-zinc-200"
+                        ? "bg-[#3B3A73]/20 border-[#3B3A73] text-[#F8FAFC]"
+                        : "bg-[#102033] border-[#3B3A73] hover:border-[#1E293B] hover:text-[#CBD5E1]"
                     }`}
                   >
-                    <span className="font-semibold block">{seed.name}</span>
-                    <span className="text-[9.5px] text-zinc-500 block font-mono mt-0.5">
-                      {seed.id === "quinoa" ? `Model: Pasankalla` : `${tr('optDoseLabel', 'Optimal Dose')}: ${seed.baseDose} kGy`}
-                    </span>
+                    <span className="font-bold block text-[11px] truncate">{seed.name}</span>
+                    {userMode === "expert" && (
+                      <span className="text-[9px] text-[#64748B] block font-mono mt-1">
+                        {seed.id === "quinoa" ? `Exp. Model` : `Empirical`}
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="mt-5">
-              <label className="text-[10px] font-mono text-zinc-500 block uppercase mb-1.5">{tr('gammaTarget', 'MUTATION TRAIT OBJECTIVE')}</label>
-              <div className="grid grid-cols-2 gap-2.5">
-                <button onClick={() => setTargetTrait("frost")} className={`p-2.5 rounded-lg border text-xs font-semibold text-center transition-all cursor-pointer ${targetTrait === "frost" ? "bg-purple-950/40 border-purple-500 text-purple-300" : "bg-zinc-950 border-zinc-805 hover:border-zinc-750"}`}>
-                  {tr('frostResist', 'Frost Immunity')}
-                </button>
-                <button onClick={() => setTargetTrait("drought")} className={`p-2.5 rounded-lg border text-xs font-semibold text-center transition-all cursor-pointer ${targetTrait === "drought" ? "bg-purple-950/40 border-purple-500 text-purple-300" : "bg-zinc-950 border-zinc-805 hover:border-zinc-750"}`}>
-                  {tr('droughtResist', 'Drought Resistance')}
-                </button>
-                <button onClick={() => setTargetTrait("salinity")} className={`p-2.5 rounded-lg border text-xs font-semibold text-center transition-all cursor-pointer ${targetTrait === "salinity" ? "bg-purple-950/40 border-purple-500 text-purple-300" : "bg-zinc-950 border-zinc-805 hover:border-zinc-750"}`}>
-                  {tr('salinityResist', 'Salinity Exclusion')}
-                </button>
-                <button onClick={() => setTargetTrait("pest")} className={`p-2.5 rounded-lg border text-xs font-semibold text-center transition-all cursor-pointer ${targetTrait === "pest" ? "bg-purple-950/40 border-purple-500 text-purple-300" : "bg-zinc-950 border-zinc-805 hover:border-zinc-750"}`}>
-                  {tr('pestResist', 'Pest Resistance')}
-                </button>
+            <div className="mt-6">
+              <label className="text-[10px] font-mono font-bold text-[#64748B] block uppercase mb-2">{tr('gammaTarget', '2. TRAIT OBJECTIVE')}</label>
+              <div className="grid grid-cols-2 gap-2">
+                {["frost", "drought", "salinity", "pest"].map(trait => (
+                  <button key={trait} onClick={() => setTargetTrait(trait)} className={`p-2 rounded-lg border text-xs font-bold text-center transition-all cursor-pointer ${targetTrait === trait ? "bg-[#2F80A8]/20 border-[#2F80A8] text-[#2F80A8]" : "bg-[#102033] border-[#3B3A73] text-[#52616B] hover:border-[#1E293B]"}`}>
+                    {trait === "frost" ? tr('frostResist', 'Frost Immunity') : trait === "drought" ? tr('droughtResist', 'Drought Resistance') : trait === "salinity" ? tr('salinityResist', 'Salinity Exclusion') : tr('pestResist', 'Pest Resistance')}
+                  </button>
+                ))}
               </div>
             </div>
 
-            <div className="mt-6">
-              <div className="flex justify-between text-[10px] font-mono mb-2">
-                <span className="text-zinc-500 uppercase">{isQuinoa ? tr('doseInGy', 'Dose in Gy') : tr('gammaDose', 'NUCLEAR RADIATION DOSE (kGy)')}</span>
-              </div>
-              <div className="relative">
-                <input
-                  type="number"
-                  min="0"
-                  max={isQuinoa ? "350" : "9999"}
-                  step={isQuinoa ? "5" : "0.1"}
-                  value={radiationDose}
-                  onChange={(e) => setRadiationDose(parseFloat(e.target.value) || 0)}
-                  className="w-full bg-zinc-950 border border-zinc-805 hover:border-zinc-700 rounded px-3 py-2.5 text-purple-400 font-mono text-sm focus:outline-none focus:border-purple-500 transition-colors"
-                />
-                <span className="absolute right-3 top-2.5 text-zinc-500 text-xs font-mono select-none">{isQuinoa ? "Gy" : "kGy"}</span>
+            <div className="mt-8">
+              <div className="flex justify-between items-end mb-2">
+                <label className="text-[10px] font-bold font-mono text-[#64748B] uppercase">
+                  {userMode === "expert" ? `3. ${tr('gammaDose', 'RADIATION DOSE')} (${doseUnit})` : `3. ${tr('seedTreatment', 'TREATMENT LEVEL')}`}
+                </label>
+                <div className="text-right">
+                  <span className="text-lg font-bold font-mono text-[#8FAE7D]">{displayDose}</span>
+                  <span className="text-[10px] font-mono text-[#64748B] ml-1">{doseUnit}</span>
+                </div>
               </div>
               
-              {isQuinoa ? (
-                <>
-                  <button onClick={() => setRadiationDose(150)} className="text-[10px] text-zinc-500 hover:text-zinc-300 font-mono mt-1.5 underline block text-right w-full cursor-pointer">{tr('resetDose', 'Reset to 150 Gy')}</button>
-                  <div className="flex justify-between text-[8px] font-mono text-zinc-650 mt-1.5 uppercase">
-                    <span>0 Gy (Control)</span>
-                    <span>150 Gy ({tr('balancedMutationZone', 'Balanced')})</span>
-                    <span>250+ Gy ({tr('highMutationDamage', 'High Damage')})</span>
-                  </div>
-                </>
-              ) : (
-                <>
-                  {radiationDose < 0 || radiationDose > 50.0 ? (
-                    <p className="text-[10px] text-red-500 font-mono mt-1">{tr('extremeDoseWarning', 'Extreme high dose detected! Reality breakdown imminent.')}</p>
-                  ) : null}
-                  <button onClick={() => setRadiationDose(selectedSeed.baseDose)} className="text-[10px] text-zinc-500 hover:text-zinc-300 font-mono mt-1.5 underline block text-right w-full cursor-pointer">{tr('resetDose', 'Reset to Optimal Dose')}</button>
-                  <div className="flex justify-between text-[8px] font-mono text-zinc-650 mt-1.5 uppercase">
-                    <span>0 kGy ({tr('lowMut', 'Low mutation')})</span>
-                    <span>{selectedSeed.baseDose} kGy ({tr('optimalLabel', 'Optimal')})</span>
-                    <span>15+ kGy ({tr('lethalMut', 'Lethal Limit')})</span>
-                  </div>
-                </>
-              )}
-            </div>
-
-            <div className="mt-5 p-3.5 rounded-xl bg-zinc-950 border border-zinc-850 flex gap-3 text-xs text-zinc-400">
-              <Scale className="w-5 h-5 text-purple-400 mt-0.5 shrink-0" />
-              <div>
-                <span className="text-zinc-350 font-semibold block uppercase">Nuclear Dosimetry Principle:</span>
-                <p className="text-[11px] leading-relaxed mt-0.5 text-zinc-500">
-                  {isQuinoa ? (
-                    userMode === "basic" ? tr('quinoaDisclaimerBasic', 'This is a simulation based on experimental quinoa seed irradiation data. It helps guide decisions but does not replace field trials.') : tr('quinoaDisclaimerExpert', 'This model uses experimental dose-response data for quinoa cv. Pasankalla and piecewise linear interpolation. It is intended for educational and decision-support purposes and does not replace controlled laboratory or field validation.')
-                  ) : (
-                     radiationDose > 10 
-                      ? "Warning: Doses exceeding 10 kGy severely damage native seed chromosomes, causing cell death (lethal mutations)." 
-                      : "Optimal range: Cobalt-60 isotopic energy breaks specific chemical strings to accelerate natural adaptations without transgenic alterations."
-                  )}
-                </p>
+              <div className="relative pt-2 pb-6">
+                <input
+                  type="range"
+                  min="0"
+                  max={doseUnit === "Gy" ? maxRiskDose : maxRiskDose / 1000}
+                  step={isQuinoa ? (doseUnit === "Gy" ? "5" : "0.005") : (doseUnit === "Gy" ? "100" : "0.1")}
+                  value={displayDose}
+                  onChange={(e) => handleDoseChange(parseFloat(e.target.value) || 0)}
+                  className="w-full h-2 bg-[#102033] rounded-lg appearance-none cursor-pointer accent-purple-500"
+                />
+                
+                {/* Risk Bar Visualization underneath */}
+                <div className="w-full h-1.5 mt-2 rounded flex overflow-hidden opacity-80">
+                   <div className="bg-[#2F80A8]" style={{ width: '20%' }}></div>
+                   <div className="bg-[#3F7D4A]" style={{ width: '30%' }}></div>
+                   <div className="bg-amber-400" style={{ width: '30%' }}></div>
+                   <div className="bg-[#B13A2E]" style={{ width: '20%' }}></div>
+                </div>
+                
+                <div className="flex justify-between text-[9px] font-mono font-bold text-[#64748B] mt-1.5 uppercase">
+                   <span>Safe</span>
+                   <span className="text-[#3F7D4A]">Optimal</span>
+                   <span>High Risk</span>
+                   <span className="text-[#B13A2E]">Lethal</span>
+                </div>
               </div>
             </div>
+
+            {userMode === "basic" && (
+               <div className="mt-2 p-3 rounded-xl bg-[#102033] border border-[#3B3A73] flex gap-3 pb-4">
+                 <HelpCircle className="w-4 h-4 text-[#2F80A8] shrink-0 mt-0.5" />
+                 <p className="text-[11px] leading-relaxed text-[#52616B]">
+                   {tr('quinoaDisclaimerBasic', 'This is a simulation based on experimental seed irradiation data. Move the slider to find the right balance between improving the seed and keeping it alive.')}
+                 </p>
+               </div>
+            )}
 
             <button
               onClick={handleSimulateMutation}
               disabled={isSimulating}
-              className="mt-6 w-full py-4 rounded-xl bg-gradient-to-r from-purple-600 via-purple-500 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-zinc-950 hover:scale-[1.01] active:scale-[0.99] font-bold text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="mt-6 w-full py-4 rounded-xl bg-[#3B3A73] hover:bg-[#7C3AED] text-white font-bold text-sm uppercase tracking-wider transition-all flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(139,92,246,0.3)] shadow-[#3B3A73]/20 border border-[#3B3A73]"
             >
-              <Zap className="w-4 h-4 fill-zinc-950 animate-pulse" />
-              {isSimulating ? "BOMBARDEO ATÓMICO EN PROGRESO..." : tr('simulateMutation', 'SIMULATE RADIATION BREEDING')}
+              <Zap className="w-4 h-4 text-white animate-pulse" />
+              {isSimulating ? "APPLYING RADIATION..." : tr('simulateMutation', 'APPLY RADIATION')}
             </button>
           </div>
-
-          <div className="p-4 bg-zinc-900/10 border border-zinc-870 rounded-xl text-[11px] text-zinc-500 italic leading-relaxed text-center">
-            {tr('nuclearIsSafe', 'Safety Note: Gamma irradiation is a controlled, safe technology.')}
-          </div>
         </div>
 
-        <div className="lg:col-span-6 space-y-6">
-          <div className="bg-zinc-950 border border-zinc-850 rounded-2xl p-6 flex flex-col justify-between h-[360px] relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-3 text-[8.5px] font-mono text-zinc-650 tracking-widest">
-              {tr('chamberStatus', 'CHAMBER STATUS: READY')}
-            </div>
-
-            <div className="flex-1 flex flex-col items-center justify-center relative">
-              <div className="absolute w-48 h-48 rounded-full border border-purple-500/15 flex items-center justify-center animate-spin-slow">
-                <div className="w-36 h-36 rounded-full border border-indigo-500/25 flex items-center justify-center animate-spin-reverse-slow">
-                  <div className="w-24 h-24 rounded-full border border-purple-500/40 flex items-center justify-center animate-pulse">
-                    <Atom className={`w-8 h-8 text-purple-400 ${isSimulating ? 'animate-spin' : ''}`} />
-                  </div>
-                </div>
-              </div>
-
-              {isSimulating && (
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div className="absolute w-12 h-12 rounded-full border border-purple-400 opacity-80 animate-ping"></div>
-                  <div className="absolute w-28 h-28 rounded-full border border-indigo-400 opacity-60 animate-ping delay-150"></div>
-                  <div className="absolute w-44 h-44 rounded-full border border-purple-400 opacity-30 animate-ping delay-300"></div>
-                </div>
-              )}
-
-              <div className="mt-4 opacity-90 text-center relative z-10">
-                <div className="bg-zinc-900/90 border border-zinc-800 px-4 py-2 rounded-xl">
-                  <span className="text-[10px] font-mono text-zinc-500 block">{tr('irradiatingSample', 'IRRADIATING SAMPLE')}</span>
-                  <strong className="text-zinc-200 text-sm font-semibold">{selectedSeed.name}</strong>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-3 border-t border-zinc-900 pt-4 text-center">
-              <div className="bg-zinc-900/30 p-2 rounded-lg border border-zinc-850">
-                <span className="text-[8.5px] font-mono text-zinc-500 uppercase block">{tr('freqUplink', 'FREQ UPLINK')}</span>
-                <strong className="text-xs font-mono font-bold text-purple-400">
-                  {isSimulating ? tr('scanning', 'SCANNING...') : "1.82 EXAHZ"}
-                </strong>
-              </div>
-              <div className="bg-zinc-900/30 p-2 rounded-lg border border-zinc-850">
-                <span className="text-[8.5px] font-mono text-zinc-500 uppercase block">{tr('halflife', 'Cobalt-60 HalfLife')}</span>
-                <strong className="text-xs font-mono font-bold text-zinc-300">5.27 {tr('years', 'years')}</strong>
-              </div>
-              <div className="bg-zinc-900/30 p-2 rounded-lg border border-zinc-850">
-                <span className="text-[8.5px] font-mono text-zinc-500 uppercase block">{tr('mutationIndex', 'MUTATION INDEX')}</span>
-                <strong className="text-xs font-mono font-bold text-emerald-400">{tr('safe', 'SAFE')}</strong>
-              </div>
-            </div>
+        {/* Right Column: Output & Visualization */}
+        <div className="xl:col-span-8 space-y-6">
+          
+          <div className="flex justify-end gap-3 mb-2">
+             {history.length > 0 && (
+               <>
+                 <button onClick={() => setShowHistory(!showHistory)} className="px-3 py-1.5 bg-[#17273D] border border-[#3B3A73] rounded-lg text-[10px] font-mono font-bold text-[#CBD5E1] flex items-center gap-1.5 hover:border-[#3B3A73]">
+                    {showHistory ? <ChevronLeft className="w-3.5 h-3.5" /> : <History className="w-3.5 h-3.5" />}
+                    {showHistory ? "BACK TO RESULTS" : "COMPARE HISTORY"}
+                 </button>
+                 {!showHistory && (
+                   <button onClick={handleDownloadReport} className="px-3 py-1.5 bg-[#17273D] border border-[#3B3A73] rounded-lg text-[10px] font-mono font-bold text-[#CBD5E1] flex items-center gap-1.5 hover:border-[#3F7D4A]">
+                      <Download className="w-3.5 h-3.5 text-[#3F7D4A]" /> PDF REPORT
+                   </button>
+                 )}
+               </>
+             )}
           </div>
 
-          {/* Quinoa Experimental Model Output */}
-          {quinoaResult && isQuinoa && (
-            <div className="bg-gradient-to-br from-purple-950/20 to-zinc-900/55 border border-purple-500/30 rounded-2xl p-6 animate-fade-in relative">
-              <span className={`absolute -top-3 left-6 text-[9px] px-2.5 py-0.5 rounded font-mono font-bold uppercase tracking-wider shadow ${quinoaResult.classification.risk === 'Lethal' ? 'bg-red-900 text-red-200 border border-red-700/60' : 'bg-purple-900 text-purple-200 border border-purple-700/60'}`}>
-                {quinoaResult.classification.risk === 'Lethal' ? tr('lethalZone', 'Lethal zone') : tr('seedImprovementRecommendation', 'Seed Improvement Recommendation')}
-              </span>
-
-              {userMode === "basic" ? (
-                <div className="space-y-4 pt-2">
-                  <p className="text-xs text-zinc-300 leading-relaxed mb-4">{quinoaResult.classification.basicMessage}</p>
+          <div className="bg-[#17273D]/30 border border-[#3B3A73] rounded-2xl p-6 min-h-[460px] relative overflow-hidden flex flex-col">
+            
+            {/* Visualizer animation when empty or simulating */}
+            {(!quinoaResult && !simulationResult && !showHistory) || isSimulating ? (
+              <div className="flex-1 flex flex-col items-center justify-center">
+                 <div className="relative w-48 h-48 flex items-center justify-center">
+                    <div className="absolute inset-0 rounded-full border border-purple-500/10 animate-spin-slow"></div>
+                    <div className="absolute inset-4 rounded-full border border-purple-500/20 animate-spin-reverse-slow"></div>
+                    <div className="absolute inset-8 rounded-full border border-[#2F80A8]/20 animate-pulse"></div>
+                    <Atom className={`w-12 h-12 text-[#8FAE7D] ${isSimulating ? 'animate-spin' : 'opacity-20'}`} />
+                 </div>
+                 {isSimulating ? (
+                   <p className="mt-8 text-sm font-mono font-bold tracking-widest text-[#8FAE7D] animate-pulse">APPLYING {radiationDoseGy} Gy TO {selectedSeed.name.toUpperCase()}</p>
+                 ) : (
+                   <p className="mt-8 text-sm font-mono tracking-widest text-[#64748B] uppercase">Ready for sequence</p>
+                 )}
+              </div>
+            ) : showHistory ? (
+              <div className="animate-fade-in relative z-10 flex-1">
+                 <h3 className="text-sm font-bold text-[#F8FAFC] uppercase mb-4 border-b border-[#3B3A73] pb-2">Treatment History</h3>
+                 <div className="space-y-3">
+                    {history.map((h, i) => (
+                      <div key={i} className="bg-[#102033] border border-[#3B3A73] rounded-xl p-4 flex items-center justify-between">
+                         <div>
+                            <span className="text-[10px] font-mono text-[#64748B]">{h.timestamp} - {h.crop}</span>
+                            <div className="text-lg font-bold font-mono text-[#8FAE7D] mt-1">{h.doseGy} Gy</div>
+                         </div>
+                         <div className="text-right flex gap-6">
+                            {h.isQuinoa ? (
+                               <>
+                                 <div><span className="text-[10px] font-mono text-[#64748B] block">Survival</span><span className="font-bold text-[#3F7D4A]">{h.growth.survivalPct}%</span></div>
+                                 <div><span className="text-[10px] font-mono text-[#64748B] block">Damage</span><span className="font-bold text-amber-400">{h.biologicalDamagePct}%</span></div>
+                                 <div><span className="text-[10px] font-mono text-[#64748B] block">Potential</span><span className="font-bold text-[#8FAE7D]">{h.usefulMutationProbabilityPct}%</span></div>
+                               </>
+                            ) : (
+                               <>
+                                 <div><span className="text-[10px] font-mono text-[#64748B] block">Integrity</span><span className="font-bold text-[#3F7D4A]">{h.integrity}%</span></div>
+                                 <div><span className="text-[10px] font-mono text-[#64748B] block">Potential</span><span className="font-bold text-[#8FAE7D]">{h.successChance}%</span></div>
+                               </>
+                            )}
+                         </div>
+                      </div>
+                    ))}
+                 </div>
+              </div>
+            ) : (
+               /* Results Rendering */
+               <div className="animate-fade-in relative z-10 h-full flex flex-col">
                   
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-zinc-950/50 p-3 rounded-lg border border-zinc-850">
-                      <span className="text-[9px] font-mono text-zinc-400 block uppercase mb-1">{tr('seedSurvivalCondition', 'Seed survival condition')}</span>
-                      <strong className={`text-xl font-bold font-mono ${quinoaResult.growth.survivalPct < 30 ? 'text-red-400' : 'text-emerald-400'}`}>
-                        {quinoaResult.growth.survivalPct}%
-                      </strong>
-                    </div>
-                    <div className="bg-zinc-950/50 p-3 rounded-lg border border-zinc-850">
-                      <span className="text-[9px] font-mono text-zinc-400 block uppercase mb-1">{tr('biologicalDamage', 'Biological damage')}</span>
-                      <strong className={`text-xl font-bold font-mono ${quinoaResult.biologicalDamagePct > 50 ? 'text-amber-400' : 'text-cyan-400'}`}>
-                        {quinoaResult.biologicalDamagePct}%
-                      </strong>
-                    </div>
-                  </div>
-                  <div className="bg-zinc-950/50 p-4 rounded-lg border border-zinc-850">
-                      <span className="text-[9px] font-mono text-zinc-400 block uppercase mb-1">{tr('usefulImprovementChance', 'Useful improvement chance')}</span>
-                      <strong className="text-2xl font-bold font-mono text-purple-400">
-                        {quinoaResult.usefulMutationProbabilityPct}%
-                      </strong>
+                  {/* Common Basic/Expert Switch logic for Quinoa / Empirical */}
+                  <div className="mb-6 flex justify-between items-start border-b border-[#3B3A73] pb-4">
+                     <div>
+                        <h3 className="text-xl font-bold text-white mb-1">
+                          {isQuinoa ? `Quinoa Strain Analysis` : `${selectedSeed.name} Analysis`}
+                        </h3>
+                        <p className="text-xs text-[#52616B] font-mono">
+                          {isQuinoa ? QuinoaResultView(quinoaResult, userMode, doseUnit, radiationDoseGy, getRiskColor).message : `General Empirical Projection`}
+                        </p>
+                     </div>
+                     <div className={`px-4 py-2 rounded-xl border flex flex-col items-end ${getRiskColor(radiationDoseGy, maxRiskDose).replace('bg-', 'border-').replace('text-', '')} bg-opacity-10 bg-black`}>
+                       <span className="text-[10px] font-mono uppercase text-[#64748B]">TREATMENT LEVEL</span>
+                       <span className={`text-xl font-bold font-mono ${getRiskColor(radiationDoseGy, maxRiskDose).replace('bg-', 'text-')}`}>
+                         {doseUnit === "Gy" ? radiationDoseGy : radiationDoseGy / 1000} {doseUnit}
+                       </span>
+                     </div>
                   </div>
 
-                  <div className="border-t border-zinc-900 pt-4 mt-2">
-                    <button 
-                      onClick={() => setShowExplanation(!showExplanation)}
-                      className="text-xs font-mono text-purple-400 hover:text-purple-300 transition-colors w-full text-left"
-                    >
-                      {showExplanation ? tr('hideScience', 'Hide Science') : tr('showScientificExplanation', 'Show scientific explanation')}
-                    </button>
-
-                    {showExplanation && (
-                       <div className="mt-3 bg-zinc-950/80 p-3 rounded-lg border border-zinc-850 text-[10px] font-mono text-zinc-400 space-y-1.5 leading-relaxed">
-                          <p><strong>{tr('doseInGy', 'Dose in Gy')}:</strong> {quinoaResult.doseGy} Gy</p>
-                          <p><strong>{tr('equivalentInKGy', 'Equivalent in kGy')}:</strong> {quinoaResult.doseKGy} kGy</p>
-                          <p><strong>{tr('germination7Days', 'Germination at 7 days')}:</strong> {quinoaResult.germination.day7Pct}%</p>
-                          <p><strong>{tr('survival30Days', 'Survival at 30 days')}:</strong> {quinoaResult.growth.survivalPct}%</p>
-                          <p><strong>{tr('rootLength', 'Root length')}:</strong> {quinoaResult.growth.rootLengthCm} cm</p>
-                          <p><strong>{tr('seedlingHeight', 'Seedling height')}:</strong> {quinoaResult.growth.seedlingHeightCm} cm</p>
-                          <p><strong>{tr('modelReference', 'Model reference')}:</strong> {quinoaResult.modelReference}</p>
-                       </div>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-4 pt-2">
-                  <div className="flex justify-between items-center mb-3">
-                     <h4 className="text-sm font-bold text-purple-300 uppercase">{tr('experimentalQuinoaModel', 'Experimental Quinoa Model')}</h4>
-                     <span className={`text-[10px] px-2 py-1 rounded font-mono font-bold ${quinoaResult.classification.risk === 'Lethal' ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
-                        {quinoaResult.classification.zone}
-                     </span>
-                  </div>
-
-                  <p className="text-xs text-zinc-300 leading-relaxed mb-4">{quinoaResult.classification.expertMessage}</p>
-
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                    <div className="bg-zinc-950/50 p-2 rounded-lg border border-zinc-850 text-center">
-                       <span className="text-[8px] font-mono text-zinc-500 block uppercase">{tr('doseInGy', 'Dose in Gy')}</span>
-                       <strong className="text-sm font-bold font-mono text-zinc-200">{quinoaResult.doseGy} Gy</strong>
-                       <p className="text-[8px] text-zinc-600 mt-1">{quinoaResult.doseKGy} kGy</p>
+                  {userMode === "basic" ? (
+                    // BASIC VIEW - Friendly Cards
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                       <BasicMetricCard title="Survival Chance" value={isQuinoa ? `${quinoaResult.growth.survivalPct}%` : `${simulationResult.integrity}%`} color="text-[#3F7D4A]" />
+                       <BasicMetricCard title="Biological Damage" value={isQuinoa ? `${quinoaResult.biologicalDamagePct}%` : `${100 - simulationResult.integrity}%`} color="text-amber-400" />
+                       <BasicMetricCard title="Improvement Potential" value={isQuinoa ? `${quinoaResult.usefulMutationProbabilityPct}%` : `${simulationResult.successChance}%`} color="text-[#8FAE7D]" />
+                       <BasicMetricCard title="Status" value={getRiskLabel(radiationDoseGy, maxRiskDose)} color="text-white" bg="bg-[#102033]" />
                     </div>
-                    <div className="bg-zinc-950/50 p-2 rounded-lg border border-zinc-850 text-center">
-                       <span className="text-[8px] font-mono text-zinc-500 block uppercase">{tr('survival30Days', 'Survival at 30 days')}</span>
-                       <strong className="text-sm font-bold font-mono text-emerald-400">{quinoaResult.growth.survivalPct}%</strong>
-                    </div>
-                     <div className="bg-zinc-950/50 p-2 rounded-lg border border-zinc-850 text-center">
-                       <span className="text-[8px] font-mono text-zinc-500 block uppercase">{tr('biologicalDamage', 'Biological damage')}</span>
-                       <strong className="text-sm font-bold font-mono text-amber-400">{quinoaResult.biologicalDamagePct}%</strong>
-                    </div>
-                    <div className="bg-zinc-950/50 p-2 rounded-lg border border-zinc-850 text-center">
-                       <span className="text-[8px] font-mono text-zinc-500 block uppercase">{tr('breedingUtilityIndex', 'Breeding Utility Index')}</span>
-                       <strong className="text-sm font-bold font-mono text-purple-400">{quinoaResult.usefulMutationProbabilityPct}</strong>
-                    </div>
-                  </div>
-
-                  <div className="bg-zinc-950/80 p-3 rounded-lg border border-zinc-850 grid grid-cols-2 md:grid-cols-4 gap-2 text-[10px] font-mono text-zinc-400">
-                     <p>7d Germ: <span className="text-zinc-200">{quinoaResult.germination.day7Pct}%</span></p>
-                     <p>15d Germ: <span className="text-zinc-200">{quinoaResult.germination.day15Pct}%</span></p>
-                     <p>Root L: <span className="text-zinc-200">{quinoaResult.growth.rootLengthCm}cm</span></p>
-                     <p>Seed L: <span className="text-zinc-200">{quinoaResult.growth.seedlingHeightCm}cm</span></p>
-                  </div>
-
-                  {/* Chart Replacement - Simplified table and SVG */}
-                  <div className="mt-4 pt-4 border-t border-zinc-900 border-dashed grid grid-cols-1 gap-4">
-                      <div>
-                        <h4 className="text-[10px] font-mono font-bold text-zinc-500 uppercase mb-2">{tr('experimentalPasankallaData', 'Experimental Pasankalla Quinoa Data')}</h4>
-                        <div className="overflow-x-auto">
-                          <table className="w-full text-left text-[9px] font-mono text-zinc-400 border-collapse">
-                            <thead>
-                              <tr className="border-b border-zinc-800 text-zinc-500">
-                                <th className="py-1">Dose</th>
-                                <th className="py-1">Germ 7d</th>
-                                <th className="py-1">Root</th>
-                                <th className="py-1">Survival</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr className={`border-b border-zinc-800/50 ${radiationDose < 100 ? 'text-purple-400 font-bold bg-purple-900/10' : ''}`}>
-                                <td className="py-1">0 Gy</td><td className="py-1">100%</td><td className="py-1">7.23 cm</td><td className="py-1">80%</td>
-                              </tr>
-                              <tr className={`border-b border-zinc-800/50 ${radiationDose >= 100 && radiationDose < 220 ? 'text-purple-400 font-bold bg-purple-900/10' : ''}`}>
-                                <td className="py-1">150 Gy</td><td className="py-1">71%</td><td className="py-1">4.58 cm</td><td className="py-1">53%</td>
-                              </tr>
-                              <tr className={`border-b border-zinc-800/50 ${radiationDose >= 220 && radiationDose < 350 ? 'text-purple-400 font-bold bg-purple-900/10' : ''}`}>
-                                <td className="py-1">250 Gy</td><td className="py-1">63%</td><td className="py-1">4.07 cm</td><td className="py-1">28%</td>
-                              </tr>
-                              <tr className={`${radiationDose >= 350 ? 'text-red-400 font-bold bg-red-900/10' : ''}`}>
-                                <td className="py-1">350 Gy</td><td className="py-1">52%</td><td className="py-1">2.80 cm</td><td className="py-1">0%</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-
-                      {/* Lightweight SVG Chart: Dose vs Survival and Damage */}
-                      <div className="bg-zinc-950/80 p-3 rounded-xl border border-zinc-900 relative h-32 flex items-end justify-between px-6 pb-6 pt-8">
-                        <span className="absolute top-2 left-3 text-[9px] font-mono text-zinc-500 uppercase">Dose vs Survival & Bio Damage (Gy)</span>
-                        {[0, 150, 250, 350].map((doseTick) => {
-                           const isCurrent = (doseTick === 0 && radiationDose < 100) || (doseTick === 150 && radiationDose >= 100 && radiationDose < 220) || (doseTick === 250 && radiationDose >= 220 && radiationDose < 350) || (doseTick === 350 && radiationDose >= 350);
-                           // Approximation for graph heights
-                           const survHeight = doseTick === 0 ? 80 : doseTick === 150 ? 53 : doseTick === 250 ? 28 : 0;
-                           const dmgHeight = doseTick === 0 ? 0 : doseTick === 150 ? 30 : doseTick === 250 ? 55 : 100;
-                           return (
-                             <div key={doseTick} className="flex flex-col items-center gap-1 group relative">
-                                <div className="flex items-end gap-1 h-[60px]">
-                                   {/* Survival Bar */}
-                                   <div style={{ height: `${survHeight}%` }} className={`w-3 rounded-t-sm ${isCurrent ? 'bg-emerald-400' : 'bg-emerald-900/50'}`}></div>
-                                   {/* Damage Bar */}
-                                   <div style={{ height: `${dmgHeight}%` }} className={`w-3 rounded-t-sm ${isCurrent ? 'bg-amber-400' : 'bg-amber-900/50'}`}></div>
-                                </div>
-                                <span className={`text-[9px] font-mono mt-2 ${isCurrent ? 'text-purple-400 font-bold' : 'text-zinc-600'}`}>{doseTick}</span>
+                  ) : (
+                    // EXPERT VIEW - Data dense
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                        <ExpertDataCard label="7d Germination" value={isQuinoa ? `${quinoaResult.germination.day7Pct}%` : 'N/A'} />
+                        <ExpertDataCard label="Cellular Integrity" value={isQuinoa ? `${quinoaResult.growth.survivalPct}%` : `${simulationResult.integrity}%`} />
+                        <ExpertDataCard label="Mutation Coef" value={isQuinoa ? `${quinoaResult.usefulMutationProbabilityPct}` : `${simulationResult.successChance}%`} />
+                        <ExpertDataCard label="Radiation Absorbed" value={Math.round(radiationDoseGy * 124) + " Gy/s"} />
+                        
+                        {isQuinoa && (
+                          <div className="col-span-full mt-2 border-t border-[#3B3A73] pt-4">
+                             <div className="text-[10px] font-mono text-[#64748B] mb-2 flex justify-between">
+                               <span>EXPERIMENTAL DOSE-RESPONSE (PASANKALLA)</span>
+                               <span>{quinoaResult.modelReference}</span>
                              </div>
-                           );
-                        })}
-                      </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+                             <div className="flex items-end h-24 gap-1 p-2 bg-[#102033] rounded-xl border border-[#3B3A73]">
+                                {[0, 100, 150, 200, 250, 300, 350].map((d) => (
+                                   <div key={d} className="flex-1 flex flex-col items-center justify-end h-full gap-1 group relative">
+                                      <div className={`w-full max-w-[20px] rounded-t-sm transition-all duration-300 ${Math.abs(d - radiationDoseGy) < 25 ? 'bg-purple-500' : 'bg-[#1E293B]'}`} style={{ height: `${d === 0 ? 90 : d === 150 ? 53 : d === 250 ? 28 : (d >= 350 ? 5 : Math.max(10, 80 - d/4))}%`}}></div>
+                                      <span className={`text-[8px] font-mono ${Math.abs(d - radiationDoseGy) < 25 ? 'text-[#8FAE7D]' : 'text-[#64748B]'}`}>{d}</span>
+                                   </div>
+                                ))}
+                             </div>
+                          </div>
+                        )}
+                    </div>
+                  )}
 
-          {/* Regular Model Output */}
-          {simulationResult && !isQuinoa && (
-            <div className="bg-gradient-to-br from-purple-950/20 to-zinc-900/55 border border-purple-500/30 rounded-2xl p-6 animate-fade-in relative">
-              <span className="absolute -top-3 left-6 bg-purple-900 text-purple-200 border border-purple-700/60 text-[9px] px-2.5 py-0.5 rounded font-mono font-bold uppercase tracking-wider shadow">
-                {simulationResult.isLethal ? "LETHAL DAMAGE WARNING" : tr('mutationSuccess', 'NUCLEAR EPIGENETIC MUTATION DETECTED')}
-              </span>
-
-              {simulationResult.isLethal ? (
-                <div className="space-y-4">
-                  <div className="flex gap-3 text-red-400 items-start">
-                    <ShieldAlert className="w-5 h-5 shrink-0 mt-0.5 animate-pulse" />
-                    <div>
-                      <h4 className="text-sm font-bold">Lethal Dose Breakout Error</h4>
-                      <p className="text-[11.5px] text-zinc-400 leading-normal mt-1">
-                        A dose of {radiationDose} kGy caused high nuclear breakage. Cellular chromosome bonds collapsed under severe bombardment. Retarget low-energy levels.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-5">
-                  <div className="flex gap-4 items-start border-b border-zinc-900 pb-4">
-                    <Dna className="w-6 h-6 text-purple-400 shrink-0 mt-1" />
-                    <div>
-                      <h4 className="text-md font-bold text-white uppercase">{simulationResult.traitName}</h4>
-                      <p className="text-xs text-zinc-400 leading-normal mt-1">
-                        {simulationResult.traitDetail}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <div className="bg-zinc-950/50 p-3 rounded-lg border border-zinc-850">
-                      <span className="text-[8px] font-mono text-zinc-500 block uppercase">MUTATION COEF</span>
-                      <strong className="text-lg font-mono font-bold text-purple-400">{simulationResult.successChance}%</strong>
-                    </div>
-                    <div className="bg-zinc-950/50 p-3 rounded-lg border border-zinc-850">
-                      <span className="text-[8px] font-mono text-zinc-500 block uppercase">CHROMOSOME INTEGRITY</span>
-                      <strong className="text-lg font-mono font-bold text-cyan-400">{simulationResult.integrity}%</strong>
-                    </div>
-                    <div className="bg-zinc-950/50 p-3 rounded-lg border border-zinc-850 col-span-2 md:col-span-1">
-                      <span className="text-[8px] font-mono text-zinc-500 block uppercase">YIELD MODIFIER</span>
-                      <strong className="text-lg font-mono font-bold text-emerald-400">+{simulationResult.yieldBonus}%</strong>
-                    </div>
+                  {/* Q-AI Explanation Box */}
+                  <div className="mt-auto pt-4 flex flex-col gap-2">
+                     {userMode === "basic" && (
+                        <button onClick={() => setShowExplanation(!showExplanation)} className="text-xs font-mono font-bold text-[#2F80A8] flex items-center gap-1.5 w-fit hover:underline">
+                          <Bot className="w-4 h-4" /> 
+                          {showExplanation ? "Hide Scientific Details" : "Ask Q-AI for Scientific Details"}
+                        </button>
+                     )}
+                     
+                     {(userMode === "expert" || showExplanation) && (
+                        <div className="bg-[#102033] p-4 rounded-xl border border-[#3B3A73]">
+                           <div className="flex items-center gap-2 mb-2 font-mono text-[10px] text-[#8FAE7D]">
+                             <Sparkles className="w-3 h-3" /> Q-AI MODEL SYNOPSIS
+                           </div>
+                           <p className="text-xs text-[#52616B] leading-relaxed">
+                             {isQuinoa 
+                               ? quinoaResult.classification.expertMessage 
+                               : `Simulated exposure of ${radiationDoseGy} Gy. ${simulationResult.traitDetail}`}
+                           </p>
+                           {isQuinoa && userMode === "expert" && (
+                              <p className="text-[10px] text-[#64748B] font-mono mt-3 pt-3 border-t border-[#3B3A73]">
+                                Technical note: Piecewise linear interpolation utilized across 0-350Gy experimental bounds.
+                              </p>
+                           )}
+                        </div>
+                     )}
                   </div>
 
-                  <div className="text-[10px] font-mono text-zinc-500 leading-normal flex items-start gap-1">
-                    <span className="w-2 h-2 rounded bg-purple-500 mt-1 shrink-0"></span>
-                    <span>
-                      Mutant baseline ready to export. Quinoa-X agronomy server registered this molecular variety code: <strong className="text-zinc-300">QX-MUT-{activeSeedId.toUpperCase()}-{Math.floor(100+Math.random()*900)}</strong>
-                    </span>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
+               </div>
+            )}
+          </div>
         </div>
-
       </div>
     </div>
   );
+}
+
+// Helper Sub-components
+const BasicMetricCard = ({ title, value, color, bg = "bg-[#102033]" }: any) => (
+  <div className={`${bg} border border-[#3B3A73] p-4 rounded-xl shadow-sm flex flex-col justify-between`}>
+     <span className="text-[10px] font-mono text-[#52616B] uppercase block mb-2">{title}</span>
+     <strong className={`text-xl md:text-2xl font-bold font-mono ${color}`}>{value}</strong>
+  </div>
+);
+
+const ExpertDataCard = ({ label, value }: any) => (
+  <div className="bg-[#102033] border border-[#3B3A73] p-3 rounded-lg flex flex-col justify-between">
+    <span className="text-[9px] font-mono text-[#64748B] uppercase block mb-1">{label}</span>
+    <strong className="text-sm font-bold font-mono text-[#F8FAFC]">{value}</strong>
+  </div>
+);
+
+const QuinoaResultView = (result: any, userMode: string, doseUnit: string, dose: number, getRiskColor: any) => {
+  if (!result) return { message: "" };
+  return {
+    message: result.classification.basicMessage
+  };
 }

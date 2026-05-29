@@ -131,7 +131,7 @@ export default function SatelliteMapView({
     { id: 1, points: "80,30 200,20 220,110 90,130", color: "#10b981", d: "M80,30 L200,20 L220,110 L90,130 Z" },
     { id: 2, points: "50,160 160,150 180,260 40,280", color: "#f59e0b", d: "M50,160 L160,150 L180,260 L40,280 Z" },
     { id: 3, points: "240,40 380,50 360,140 230,120", color: "#10b981", d: "M240,40 L380,50 L360,140 L230,120 Z" },
-    { id: 4, points: "200,150 380,160 370,270 210,290", color: "#ef4444", d: "M195,145 L380,160 L370,270 L210,290 Z" },
+    { id: 4, points: "200,150 380,160 370,270 210,290", color: "#B13A2E", d: "M195,145 L380,160 L370,270 L210,290 Z" },
   ];
 
   const handleIrrigationTrigger = (sectId: number) => {
@@ -154,23 +154,23 @@ export default function SatelliteMapView({
   };
 
   return (
-    <div className="flex-1 bg-zinc-950 text-zinc-100 overflow-y-auto min-h-screen pb-24">
+    <div className="flex-1 bg-[#102033] text-[#F8FAFC] overflow-y-auto min-h-screen pb-24 animate-fade-in">
       
       {/* Page Header */}
-      <div className="p-6 border-b border-zinc-900 bg-zinc-950/80 backdrop-blur-md sticky top-0 z-40 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-emerald-400">
+      <div className="p-6 border-b border-[#3B3A73]/50 bg-[#102033]/80 backdrop-blur-md sticky top-0 z-40 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="animate-slide-up">
+          <div className="flex items-center gap-2 text-xs font-mono text-[#D9A441]">
             <Radio className="w-3.5 h-3.5 animate-pulse" />
             <span>ALTI-TELEMETRY STATION GPS GRID 4</span>
           </div>
-          <h2 className="text-xl md:text-2xl font-bold font-sans tracking-tight text-white mt-1 font-sans">
+          <h2 className="text-xl md:text-2xl font-bold font-sans tracking-tight text-white mt-1">
             {tr('satellites', 'SATELLITES & MAPS')}
           </h2>
-          <p className="text-xs text-zinc-500 font-mono mt-0.5 leading-relaxed">
+          <p className="text-xs text-[#EFE3C8]/80 font-mono mt-0.5 leading-relaxed">
             ESA Sentinel-2 Multispectral grid correlation • Bolivia Altiplano, Oruro & Titicaca Basins
           </p>
         </div>
-        <div className="px-3.5 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-zinc-400">
+        <div className="px-3.5 py-1.5 rounded-xl bg-[#17273D] border border-[#3B3A73]/80 text-[11px] font-mono text-[#EFE3C8] animate-slide-up" style={{ animationDelay: '50ms' }}>
           Nuclear Node: Q-VECT-GPS
         </div>
       </div>
@@ -179,28 +179,28 @@ export default function SatelliteMapView({
         
         {/* INTERACTIVE SATELLITE MAP CONTAINER : Left 7 cols */}
         <div className="lg:col-span-7 space-y-6">
-          <div className="bg-zinc-900/30 border border-zinc-850 rounded-2xl p-4 overflow-hidden shadow-2xl relative">
+          <div className="bg-[#17273D]/30 border border-[#3B3A73]/60 rounded-2xl p-4 overflow-hidden shadow-2xl relative animate-slide-up" style={{ animationDelay: '100ms' }}>
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-mono font-medium text-zinc-400 flex items-center gap-1.5">
-                <Compass className="w-4 h-4 text-emerald-400" />
+              <span className="text-xs font-mono font-medium text-[#EFE3C8] flex items-center gap-1.5 transition-colors">
+                <Compass className="w-4 h-4 text-[#D9A441]" />
                 Live GPS Vector Polygon Overlay
               </span>
-              <span className="text-[10px] bg-emerald-950/40 text-emerald-400 font-mono border border-emerald-805 px-2 py-0.5 rounded">
+              <span className="text-[10px] bg-[#D9A441]/10 text-[#D9A441] font-mono border border-[#3F7D4A]/40 px-2 py-0.5 rounded transition-colors">
                 Sentinel-2 Sync: High
               </span>
             </div>
 
             {/* Live Interactive Map Box */}
-            <div className="relative aspect-[4/3] rounded-xl overflow-hidden border border-zinc-900 bg-zinc-950 select-none">
+            <div className="relative aspect-[4/3] rounded-xl overflow-hidden border border-[#3B3A73]/50 bg-[#102033] select-none group">
               <img
                 src={GALLERY_MOCK_IMAGES.satellite_fields}
                 alt="Satellite Grid Mapping Bolivia Altiplano"
-                className="absolute inset-0 w-full h-full object-cover grayscale-15 brightness-90 z-0"
+                className="absolute inset-0 w-full h-full object-cover grayscale-[15%] brightness-90 z-0 transition-transform duration-700 ease-out group-hover:scale-105"
                 referrerPolicy="no-referrer"
               />
 
               {/* Dynamic SVG overlay with polygons maps */}
-              <svg className="absolute inset-0 w-full h-full z-10" viewBox="0 0 420 315">
+              <svg className="absolute inset-0 w-full h-full z-10 transition-transform duration-700 ease-out group-hover:scale-105" viewBox="0 0 420 315">
                 <defs>
                   <linearGradient id="vectorHeatmap" x1="0" y1="0" x2="1" y2="1">
                     <stop offset="0%" stopColor="#10b981" stopOpacity="0.4" />
@@ -220,7 +220,7 @@ export default function SatelliteMapView({
                       <polygon
                         points={poly.points}
                         fill={isSectActive ? (activeLayerId === "isotope" ? "rgba(168, 85, 247, 0.25)" : "rgba(16, 185, 129, 0.25)") : "transparent"}
-                        stroke={isSectActive ? "#10b981" : (isCritical ? "#ef4444" : "#4b5563")}
+                        stroke={isSectActive ? "#10b981" : (isCritical ? "#B13A2E" : "#4b5563")}
                         strokeWidth={isSectActive ? "2.5" : "1.5"}
                         strokeDasharray={isCritical ? "4,4" : "0"}
                         className="transition-all duration-300 group-hover:fill-emerald-400/10 group-hover:stroke-emerald-400"
@@ -242,15 +242,15 @@ export default function SatelliteMapView({
               </svg>
 
               {/* Glowing active sector ring effect */}
-              <div className="absolute top-4 right-4 bg-zinc-950/90 border border-zinc-800 backdrop-blur-md p-3 rounded-xl z-20 max-w-xs font-mono text-[11px] space-y-1 shadow">
-                <span className="font-bold text-zinc-300 uppercase block">Selected Sector Profile</span>
-                <div className="flex items-center justify-between text-zinc-400 gap-6">
+              <div className="absolute top-4 right-4 bg-[#102033]/90 border border-[#3B3A73]/80 backdrop-blur-md p-3 rounded-xl z-20 max-w-xs font-mono text-[11px] space-y-1 shadow">
+                <span className="font-bold text-[#F8FAFC]/90 uppercase block">Selected Sector Profile</span>
+                <div className="flex items-center justify-between text-[#EFE3C8] gap-6">
                   <span>ID:</span>
                   <span className="font-bold text-white">Sector {selectedSector.id}</span>
                 </div>
-                <div className="flex items-center justify-between text-zinc-400">
+                <div className="flex items-center justify-between text-[#EFE3C8]">
                   <span>Status:</span>
-                  <span className={`font-bold ${selectedSector.cropStatus === "CRITICAL" ? "text-red-400 animate-pulse" : selectedSector.cropStatus === "CAUTION" ? "text-yellow-400" : "text-emerald-400"}`}>
+                  <span className={`font-bold ${selectedSector.cropStatus === "CRITICAL" ? "text-[#B13A2E] animate-pulse" : selectedSector.cropStatus === "CAUTION" ? "text-yellow-400" : "text-[#D9A441]"}`}>
                     {selectedSector.cropStatus}
                   </span>
                 </div>
@@ -258,12 +258,12 @@ export default function SatelliteMapView({
             </div>
 
             {/* SATELLITE FILTER TOOLS LAYERS SECTION */}
-            <div className="mt-5 pt-5 border-t border-zinc-900 space-y-4">
+            <div className="mt-5 pt-5 border-t border-[#3B3A73]/50 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-mono font-medium text-zinc-400">
+                <span className="text-xs font-mono font-medium text-[#EFE3C8]">
                   Copernicus Multi-Spectral Imagery Filter
                 </span>
-                <span className="text-[10px] text-zinc-500 font-mono">
+                <span className="text-[10px] text-[#EFE3C8]/80 font-mono">
                   Spectral Index: {activeLayer.name}
                 </span>
               </div>
@@ -275,8 +275,8 @@ export default function SatelliteMapView({
                     onClick={() => setActiveLayerId(layer.id)}
                     className={`p-3 rounded-xl border text-left cursor-pointer transition-all
                       ${layer.id === activeLayerId
-                        ? "bg-zinc-900 text-white border-emerald-500/70 shadow shadow-emerald-950/20"
-                        : "bg-zinc-950 border-zinc-900 text-zinc-400 hover:bg-zinc-900/60"
+                        ? "bg-[#17273D] text-white border-[#D9A441]/70 shadow shadow-emerald-950/20"
+                        : "bg-[#102033] border-[#3B3A73]/50 text-[#EFE3C8] hover:bg-[#17273D]/60"
                       }
                     `}
                   >
@@ -284,7 +284,7 @@ export default function SatelliteMapView({
                       <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: layer.colorHex }}></span>
                       <span>{layer.name.split(" ")[0]} layer</span>
                     </div>
-                    <p className="text-[10.5px] text-zinc-500 leading-tight mt-1 truncate">
+                    <p className="text-[10.5px] text-[#EFE3C8]/80 leading-tight mt-1 truncate">
                       {layer.caption}
                     </p>
                   </button>
@@ -292,11 +292,11 @@ export default function SatelliteMapView({
               </div>
 
               {/* Dynamic Opacity Slider block */}
-              <div className="mt-4 p-3 bg-zinc-950 border border-zinc-900/60 rounded-xl flex items-center justify-between gap-6">
-                <div className="flex items-center gap-2 font-mono text-[11px] text-zinc-400 shrink-0">
-                  <Layers className="w-3.5 h-3.5 text-zinc-500" />
+              <div className="mt-4 p-3 bg-[#102033] border border-[#3B3A73]/50/60 rounded-xl flex items-center justify-between gap-6">
+                <div className="flex items-center gap-2 font-mono text-[11px] text-[#EFE3C8] shrink-0">
+                  <Layers className="w-3.5 h-3.5 text-[#EFE3C8]/80" />
                   <span>Overlay Opacity:</span>
-                  <span className="font-bold text-emerald-400">{Math.round(layerOpacity * 100)}%</span>
+                  <span className="font-bold text-[#D9A441]">{Math.round(layerOpacity * 100)}%</span>
                 </div>
                 <div className="flex-1 relative">
                   <input
@@ -305,9 +305,9 @@ export default function SatelliteMapView({
                     max="100"
                     value={Math.round(layerOpacity * 100)}
                     onChange={(e) => setLayerOpacity((parseFloat(e.target.value) || 0) / 100)}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-1.5 text-emerald-400 font-mono text-xs focus:outline-none focus:border-emerald-500 transition-colors"
+                    className="w-full bg-[#102033] border border-[#3B3A73]/80 rounded-lg px-3 py-1.5 text-[#D9A441] font-mono text-xs focus:outline-none focus:border-[#D9A441] transition-colors"
                   />
-                  <span className="absolute right-3 top-2 text-zinc-500 text-[10px] font-mono select-none">%</span>
+                  <span className="absolute right-3 top-2 text-[#EFE3C8]/80 text-[10px] font-mono select-none">%</span>
                 </div>
               </div>
             </div>
@@ -318,29 +318,29 @@ export default function SatelliteMapView({
         <div className="lg:col-span-5 space-y-6">
 
           {/* GPS Detector module (Feature 2) */}
-          <div className="bg-zinc-900/40 border border-zinc-850 p-5 rounded-2xl space-y-4">
-            <h3 className="font-bold text-xs font-mono text-cyan-400 uppercase tracking-widest flex items-center gap-2 pb-2.5 border-b border-zinc-900">
-              <MapPin className="w-4 h-4 text-cyan-400" />
+          <div className="bg-[#17273D]/40 border border-[#3B3A73]/60 p-5 rounded-2xl space-y-4 animate-slide-up" style={{ animationDelay: '150ms' }}>
+            <h3 className="font-bold text-xs font-mono text-[#2F80A8] uppercase tracking-widest flex items-center gap-2 pb-2.5 border-b border-[#3B3A73]/50 transition-colors">
+              <MapPin className="w-4 h-4 text-[#2F80A8]" />
               {tr('gpsDetector', 'GPS LOCATOR')}
             </h3>
 
-            <p className="text-[11.5px] text-zinc-400 leading-relaxed">
+            <p className="text-[11.5px] text-[#EFE3C8] leading-relaxed transition-colors">
               Detect user location coordinates instantly under the Copernicus navigation mesh to sync your regional soils and water thresholds.
             </p>
 
             <button
               onClick={handleTriggerGpsDetection}
               disabled={gpsLoading}
-              className="w-full py-2 px-4 rounded-xl bg-zinc-950 hover:bg-zinc-900 text-zinc-300 font-mono text-[11px] hover:border-zinc-700 border border-zinc-805 cursor-pointer flex items-center gap-2 justify-center transition-all"
+              className="w-full py-3 px-4 rounded-xl bg-[#102033] hover:bg-[#17273D] text-[#F8FAFC]/90 font-mono text-[11px] hover:border-[#2F80A8]/50 border border-[#3B3A73]/70 cursor-pointer flex items-center gap-2 justify-center transition-all duration-300 hover:shadow-[0_0_15px_rgba(34,211,238,0.15)] group"
             >
               {gpsLoading ? (
                 <>
-                  <Activity className="w-3.5 h-3.5 text-cyan-400 animate-spin" />
+                  <Activity className="w-4 h-4 text-[#2F80A8] animate-spin" />
                   <span>DETERMINING MULTISPECTRAL POSITION...</span>
                 </>
               ) : (
                 <>
-                  <Compass className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+                  <Compass className="w-4 h-4 text-[#2F80A8] group-hover:animate-pulse" />
                   <span>{tr('detectLocation', 'USE MY GPS LOCATION')}</span>
                 </>
               )}
@@ -348,91 +348,91 @@ export default function SatelliteMapView({
 
             {/* Simulated Live Radar Sweep when lookup is loaded */}
             {gpsLoading && (
-              <div className="relative h-24 bg-zinc-950 border border-zinc-900 rounded-xl flex items-center justify-center overflow-hidden">
-                <div className="absolute w-20 h-20 rounded-full border border-cyan-500/20 flex items-center justify-center">
-                  <div className="absolute w-12 h-12 rounded-full border border-cyan-400/40 flex items-center justify-center">
-                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+              <div className="relative h-28 bg-[#102033] border border-[#3B3A73]/50 rounded-xl flex items-center justify-center overflow-hidden animate-fade-in shadow-inner">
+                <div className="absolute w-20 h-20 rounded-full border border-[#2F80A8]/20 flex items-center justify-center">
+                  <div className="absolute w-12 h-12 rounded-full border border-[#2F80A8]/40 flex items-center justify-center">
+                    <span className="w-2.5 h-2.5 rounded-full bg-[#2F80A8] animate-ping"></span>
                   </div>
                 </div>
                 {/* CSS animated sweep line */}
-                <div className="absolute w-[100px] h-[1px] bg-gradient-to-r from-cyan-400 to-transparent transform origin-left rotate-45 animate-radar"></div>
-                <span className="text-[8.5px] font-mono text-zinc-550 absolute bottom-1 right-2 tracking-widest">UPLINKING...</span>
+                <div className="absolute w-[120px] h-[1px] bg-gradient-to-r from-cyan-400 to-transparent transform origin-left rotate-45 animate-radar"></div>
+                <span className="text-[8.5px] font-mono text-[#EFE3C8]/80 absolute bottom-1.5 right-2.5 tracking-widest animate-pulse">UPLINKING...</span>
               </div>
             )}
 
             {/* Detected coordinates card */}
             {detectedGps && (
-              <div className="p-4 bg-zinc-950 border border-zinc-870 rounded-xl space-y-3 font-mono text-[11px] leading-normal animate-fade-in">
-                <span className="text-[9px] text-zinc-500 block uppercase font-bold">{tr('detectedRegion', 'SYSTEM MATCHED REGION')}</span>
-                <strong className="text-zinc-200 block text-xs">{detectedGps.zone}</strong>
+              <div className="p-4 bg-[#102033] border border-[#3B3A73]/40 rounded-xl space-y-3 font-mono text-[11px] leading-normal animate-fade-in shadow-sm">
+                <span className="text-[9px] text-[#EFE3C8]/80 block uppercase font-bold transition-colors">{tr('detectedRegion', 'SYSTEM MATCHED REGION')}</span>
+                <strong className="text-[#F8FAFC] block text-xs">{detectedGps.zone}</strong>
 
-                <div className="grid grid-cols-2 gap-3 bg-zinc-900/30 p-2 border border-zinc-900 rounded-lg text-center">
+                <div className="grid grid-cols-2 gap-3 bg-[#17273D]/30 p-2 border border-[#3B3A73]/50 rounded-lg text-center transition-colors">
                   <div>
-                    <span className="text-[8px] text-zinc-500 uppercase block">LAT</span>
-                    <strong className="text-cyan-400 font-bold">{detectedGps.lat}° S</strong>
+                    <span className="text-[8px] text-[#EFE3C8]/80 uppercase block">LAT</span>
+                    <strong className="text-[#2F80A8] font-bold tracking-wider">{detectedGps.lat}° S</strong>
                   </div>
                   <div>
-                    <span className="text-[8px] text-zinc-500 uppercase block">LNG</span>
-                    <strong className="text-cyan-400 font-bold">{detectedGps.lng}° W</strong>
+                    <span className="text-[8px] text-[#EFE3C8]/80 uppercase block">LNG</span>
+                    <strong className="text-[#2F80A8] font-bold tracking-wider">{detectedGps.lng}° W</strong>
                   </div>
                 </div>
 
-                <div className="text-[10.5px] text-zinc-400 flex items-start gap-2.5">
-                  <span className="text-cyan-400 font-bold font-mono">REC:</span>
-                  <p className="leading-relaxed">{detectedGps.wueRec}</p>
+                <div className="text-[10.5px] text-[#EFE3C8] flex items-start gap-2.5 bg-[#17273D]/20 p-2 rounded-lg border border-[#3B3A73]/50/50">
+                  <span className="text-[#2F80A8] font-bold font-mono">REC:</span>
+                  <p className="leading-relaxed transition-colors">{detectedGps.wueRec}</p>
                 </div>
               </div>
             )}
           </div>
 
-          <div className="bg-zinc-900/35 border border-zinc-900 p-5 rounded-2xl space-y-5">
+          <div className="bg-[#17273D]/35 border border-[#3B3A73]/50 p-5 rounded-2xl space-y-5 animate-slide-up" style={{ animationDelay: '200ms' }}>
             <div>
-              <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-wider block font-bold">
+              <span className="text-[10px] font-mono text-[#D9A441] uppercase tracking-wider block font-bold transition-colors">
                 Telemetry Dispatcher
               </span>
-              <h3 className="font-bold text-lg text-white mt-1">
+              <h3 className="font-bold text-lg text-white mt-1 transition-colors">
                 {selectedSector.name}
               </h3>
-              <p className="text-xs text-zinc-550 font-mono mt-0.5">
+              <p className="text-xs text-[#EFE3C8]/70 font-mono mt-0.5 transition-colors">
                 Location: {selectedSector.location}
               </p>
             </div>
 
             {/* Quick specifications layout */}
-            <div className="grid grid-cols-2 gap-3 p-3 bg-zinc-950 rounded-xl border border-zinc-900 font-mono text-xs">
+            <div className="grid grid-cols-2 gap-3 p-3 bg-[#102033] rounded-xl border border-[#3B3A73]/50 font-mono text-xs">
               <div className="space-y-1">
-                <span className="text-[10px] text-zinc-500">Elevation Status</span>
-                <div className="font-bold text-zinc-200">{selectedSector.elevation} meters alt</div>
+                <span className="text-[10px] text-[#EFE3C8]/80">Elevation Status</span>
+                <div className="font-bold text-[#F8FAFC]">{selectedSector.elevation} meters alt</div>
               </div>
               <div className="space-y-1">
-                <span className="text-[10px] text-zinc-500">Soil Geological Profile</span>
-                <div className="font-bold text-zinc-200 truncate">{selectedSector.soilType}</div>
+                <span className="text-[10px] text-[#EFE3C8]/80">Soil Geological Profile</span>
+                <div className="font-bold text-[#F8FAFC] truncate">{selectedSector.soilType}</div>
               </div>
             </div>
 
             {/* Isotopic Metrics summary for the sector */}
             <div className="space-y-3.5">
-              <div className="text-[10.5px] font-mono text-zinc-500 uppercase tracking-widest leading-none">
+              <div className="text-[10.5px] font-mono text-[#EFE3C8]/80 uppercase tracking-widest leading-none">
                 Local Biochemical Identifiers
               </div>
               
-              <div className="flex justify-between items-center bg-zinc-950 p-2.5 rounded-lg border border-zinc-900 text-xs font-mono">
-                <span className="text-zinc-505">Nitrogen-15 FUE Ratio:</span>
-                <span className="font-bold text-cyan-400">{selectedSector.nitrogen15 >= 0 ? "+" : ""}{selectedSector.nitrogen15.toFixed(1)}‰</span>
+              <div className="flex justify-between items-center bg-[#102033] p-2.5 rounded-lg border border-[#3B3A73]/50 text-xs font-mono">
+                <span className="text-[#EFE3C8]/70">Nitrogen-15 FUE Ratio:</span>
+                <span className="font-bold text-[#2F80A8]">{selectedSector.nitrogen15 >= 0 ? "+" : ""}{selectedSector.nitrogen15.toFixed(1)}‰</span>
               </div>
-              <div className="flex justify-between items-center bg-zinc-950 p-2.5 rounded-lg border border-zinc-900 text-xs font-mono">
-                <span className="text-zinc-505">Oxygen-18 Soil-Evap:</span>
-                <span className="font-bold text-emerald-400">{selectedSector.oxygen18.toFixed(1)}‰</span>
+              <div className="flex justify-between items-center bg-[#102033] p-2.5 rounded-lg border border-[#3B3A73]/50 text-xs font-mono">
+                <span className="text-[#EFE3C8]/70">Oxygen-18 Soil-Evap:</span>
+                <span className="font-bold text-[#D9A441]">{selectedSector.oxygen18.toFixed(1)}‰</span>
               </div>
-              <div className="flex justify-between items-center bg-zinc-950 p-2.5 rounded-lg border border-zinc-900 text-xs font-mono">
-                <span className="text-zinc-505">Deuterium Water recharge:</span>
-                <span className="font-bold text-purple-400">{selectedSector.deuterium.toFixed(1)}‰</span>
+              <div className="flex justify-between items-center bg-[#102033] p-2.5 rounded-lg border border-[#3B3A73]/50 text-xs font-mono">
+                <span className="text-[#EFE3C8]/70">Deuterium Water recharge:</span>
+                <span className="font-bold text-[#8FAE7D]">{selectedSector.deuterium.toFixed(1)}‰</span>
               </div>
             </div>
 
             {/* Actionable button triggers */}
             <div className="pt-2.5 space-y-3">
-              <div className="text-[10.5px] font-mono text-zinc-500 uppercase tracking-widest leading-none">
+              <div className="text-[10.5px] font-mono text-[#EFE3C8]/80 uppercase tracking-widest leading-none">
                 Interactive Ground Commands
               </div>
 
@@ -440,7 +440,7 @@ export default function SatelliteMapView({
                 <button
                   onClick={() => handleIrrigationTrigger(selectedSector.id)}
                   disabled={isIrrigating}
-                  className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-500 hover:scale-[1.01] transition-all text-zinc-950 font-bold font-sans text-xs flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-red-950/20"
+                  className="w-full py-3 rounded-xl bg-[#8A4B2A] hover:bg-[#B13A2E] hover:scale-[1.01] transition-all text-[#102033] font-bold font-sans text-xs flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#B13A2E]/20"
                 >
                   <Waves className={`w-4 h-4 ${isIrrigating ? "animate-bounce" : ""}`} />
                   {isIrrigating ? "DEPLOYING ACTIVE HIGH-PRESSURE DRIFT..." : "DEPLOY HIGH-FREQUENCY IRRIGATION DRIFT"}
@@ -449,7 +449,7 @@ export default function SatelliteMapView({
                 <button
                   onClick={() => handleIrrigationTrigger(selectedSector.id)}
                   disabled={isIrrigating}
-                  className="w-full py-3 rounded-xl bg-zinc-850 hover:bg-zinc-800 hover:scale-[1.01] transition-all text-zinc-200 font-bold font-mono border border-zinc-805 text-xs flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3 rounded-xl bg-[#3B3A73] hover:bg-[#3B3A73]/80 hover:scale-[1.01] transition-all text-[#F8FAFC] font-bold font-mono border border-[#3B3A73]/70 text-xs flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Waves className={`w-4 h-4 ${isIrrigating ? "animate-bounce" : ""}`} />
                   {isIrrigating ? "TRIGGERING DRIFT LOOP..." : "DRIFT MANUAL WATER IRRIGATION"}
@@ -458,23 +458,23 @@ export default function SatelliteMapView({
 
               {/* Status reporting or feedback msg */}
               {irrigationSuccessMsg && (
-                <div className="p-2.5 bg-emerald-950/40 border border-emerald-800 rounded-lg text-[11px] text-emerald-400 font-mono leading-relaxed mt-2 animate-fadeIn">
+                <div className="p-2.5 bg-[#D9A441]/10 border border-[#D9A441]/40 rounded-lg text-[11px] text-[#D9A441] font-mono leading-relaxed mt-2 animate-fadeIn">
                   {irrigationSuccessMsg}
                 </div>
               )}
             </div>
 
             {/* LIVE GEMINI API COGNITIVE ANALYSIS DISPATCH */}
-            <div className="mt-4 pt-4 border-t border-zinc-900 space-y-4">
+            <div className="mt-4 pt-4 border-t border-[#3B3A73]/50 space-y-4">
               <div className="flex items-center justify-between">
-                <h4 className="text-xs font-mono text-zinc-400 font-bold uppercase flex items-center gap-1.5">
-                  <Zap className="w-3.5 h-3.5 text-cyan-400" />
+                <h4 className="text-xs font-mono text-[#EFE3C8] font-bold uppercase flex items-center gap-1.5">
+                  <Zap className="w-3.5 h-3.5 text-[#2F80A8]" />
                   Gemini Mass Isotope Evaluation
                 </h4>
                 <button
                   onClick={handleQueryAIDispatch}
                   disabled={isAnalyzing}
-                  className="px-3 py-1 rounded bg-zinc-800 hover:bg-zinc-150 border border-zinc-700 hover:border-zinc-630 text-[10.5px] font-mono text-zinc-200 cursor-pointer text-[9.5px]"
+                  className="px-3 py-1 rounded bg-[#3B3A73]/80 hover:bg-[#F8FAFC] border border-[#3B3A73]/90 hover:border-[#52616B] text-[10.5px] font-mono text-[#F8FAFC] cursor-pointer text-[9.5px]"
                 >
                   {isAnalyzing ? "ASSESSING PROFILE..." : "RUN RADAR FORECAST"}
                 </button>
@@ -482,9 +482,9 @@ export default function SatelliteMapView({
 
               {/* Display AI generation loading progress */}
               {isAnalyzing && (
-                <div className="p-4 bg-zinc-950 rounded-xl border border-zinc-900 text-center space-y-2.5 font-mono">
-                  <Activity className="w-5 h-5 text-cyan-400 animate-spin mx-auto" />
-                  <p className="text-[11px] text-zinc-400 blinking">
+                <div className="p-4 bg-[#102033] rounded-xl border border-[#3B3A73]/50 text-center space-y-2.5 font-mono">
+                  <Activity className="w-5 h-5 text-[#2F80A8] animate-spin mx-auto" />
+                  <p className="text-[11px] text-[#EFE3C8] blinking">
                     Decrypting nuclear 15N soil profiles & d18C water evaporation parameters via Gemini AI...
                   </p>
                 </div>
@@ -492,7 +492,7 @@ export default function SatelliteMapView({
 
               {/* Display AI error if fails */}
               {analysisError && (
-                <div className="p-3 bg-red-950/20 border border-red-800 rounded-lg text-xs font-mono text-red-400">
+                <div className="p-3 bg-[#B13A2E]/10 border border-[#B13A2E]/50 rounded-lg text-xs font-mono text-[#B13A2E]">
                   <AlertCircle className="w-4 h-4 inline mr-2" />
                   {analysisError}
                 </div>
@@ -500,27 +500,27 @@ export default function SatelliteMapView({
 
               {/* Display visual AI Report dispatch if succeeds! */}
               {aiReport && (
-                <div className="p-4 bg-zinc-950 border border-zinc-900 rounded-xl space-y-3 font-mono text-[11px] animate-fadeIn">
-                  <div className="flex items-center justify-between border-b border-zinc-900 pb-2">
-                    <span className="text-[10px] text-zinc-500 uppercase font-bold">ANALYSIS STATUS:</span>
+                <div className="p-4 bg-[#102033] border border-[#3B3A73]/50 rounded-xl space-y-3 font-mono text-[11px] animate-fadeIn">
+                  <div className="flex items-center justify-between border-b border-[#3B3A73]/50 pb-2">
+                    <span className="text-[10px] text-[#EFE3C8]/80 uppercase font-bold">ANALYSIS STATUS:</span>
                     <span className={`font-black text-xs px-2 py-0.5 rounded
-                      ${aiReport.verdict === "CRITICAL" ? "bg-red-950 text-red-500 border border-red-900" :
+                      ${aiReport.verdict === "CRITICAL" ? "bg-[#B13A2E]/10 text-[#B13A2E] border border-[#B13A2E]/30" :
                         aiReport.verdict === "CAUTION" ? "bg-yellow-950 text-yellow-500 border border-yellow-905" :
-                        "bg-emerald-950 text-emerald-500 border border-emerald-900"
+                        "bg-[#D9A441]/10 text-[#3F7D4A] border border-[#D9A441]/30"
                       }
                     `}>
                       {aiReport.verdict}
                     </span>
                   </div>
 
-                  <div className="text-zinc-350 leading-relaxed">
-                    <p className="font-semibold text-zinc-200">Isotopic Assessment:</p>
-                    <p className="mt-1 text-zinc-400">{aiReport.analysis}</p>
+                  <div className="text-[#EFE3C8] leading-relaxed">
+                    <p className="font-semibold text-[#F8FAFC]">Isotopic Assessment:</p>
+                    <p className="mt-1 text-[#EFE3C8]">{aiReport.analysis}</p>
                   </div>
 
                   <div className="space-y-1.5 pt-1">
-                    <p className="font-semibold text-zinc-200">Recommended Agronomy Interventions:</p>
-                    <ul className="list-disc list-inside space-y-1 text-zinc-400 pl-1">
+                    <p className="font-semibold text-[#F8FAFC]">Recommended Agronomy Interventions:</p>
+                    <ul className="list-disc list-inside space-y-1 text-[#EFE3C8] pl-1">
                       {aiReport.recommendations.map((rec, i) => (
                         <li key={i} className="leading-tight">{rec}</li>
                       ))}
