@@ -42,7 +42,7 @@ app.post("/api/agronomist", async (req, res) => {
 
   try {
     const ai = getGeminiClient();
-    
+
     // Construct system instructions with deep scientific context
     const systemInstruction = `You are "Quinoa-X Isotopic Agronomist AI", an elite AI agronomy adviser specializing in the Bolivan Altiplano, soil sciences, and nuclear agrotechnology.
 You analyze isotopic trace data to optimize water consumption, soil preservation, and crop yields.
@@ -96,7 +96,7 @@ app.post("/api/analyze-sector", async (req, res) => {
     const ai = getGeminiClient();
     const systemInstruction = "You are a senior soil analyst expert in isotopic hydrology.";
     const prompt = `Analyze Sector ${sectorId} soil profile and generate an urgent agronomical dispatch.
-    
+
     Metrics:
     - Soil Moisture: ${moisture}% (Optimal target: 35%)
     - Photosynthetic Crop Health: ${health}%
@@ -108,7 +108,7 @@ app.post("/api/analyze-sector", async (req, res) => {
     1. "verdict": "CRITICAL" | "CAUTION" | "OPTIMAL"
     2. "analysis": A 2-sentence summary of the isotope dynamic and moisture status.
     3. "recommendations": Three specific bullet instructions. (e.g. adjust drip irrigation, shift nitrogen tracer testing interval, deploy biological mulch).
-    
+
     Make sure your JSON has exactly these fields without markdown wrapping blocks.
     Use this JSON output constraint: responseMimeType: "application/json"`;
 
