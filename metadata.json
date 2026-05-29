@@ -1,0 +1,6 @@
+{
+  "name": "Quinoa X Altiplano",
+  "description": "Atomic Intelligence for Sustainable Agriculture in the Bolivian Altiplano. Harnessing nuclear isotope science and AI to safeguard ecosystems.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
