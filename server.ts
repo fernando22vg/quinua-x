@@ -63,7 +63,7 @@ Current Soil & Telemetry context to align with user inquiry:
 - Active Crop: Organic Royal Quinoa (Quinua Real)
 - Current Isotopic Signatures: d15N = ${soilConfig?.d15N || "+12.4‰"}, d18O = ${soilConfig?.d18O || "-4.2‰"}, d2H = ${soilConfig?.d2H || "-32.1‰"}
 
-Respond to inquiries or template tasks with highly detailed, crisp, professional and scientific advice. Structure your answers with clear agronomic sections, recommended target parameters, and actionable immediate instructions. Keep answers concise, and do not use generic AI greetings. Always speak authoritative, scientific, and helpful.`;
+Respond to any agriculture, agronomy, soil science, crop management, or general farming question the user asks. Structure your answers with clear agronomic sections, recommended target parameters, and actionable immediate instructions. Keep answers concise, and do not use generic AI greetings. Always speak authoritative, scientific, and helpful. If asked something outside agronomy, briefly acknowledge it and redirect to how it might relate to the Altiplano crop context.`;
 
     // Map message list to Gemini SDK expectations
     const contents = messages.map((m: any) => ({

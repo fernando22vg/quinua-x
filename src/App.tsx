@@ -10,7 +10,7 @@ import BasicDashboard from "./components/basic/BasicDashboard";
 import { INITIAL_SECTORS } from "./data";
 import { Sector, Message } from "./types";
 import { Language, TRANSLATIONS, t } from "./translations";
-import { Bot, User, Send, MessageSquare, X, RefreshCw, Sparkles, Globe, ShieldCheck, MapPin } from "lucide-react";
+import { Bot, User, Send, MessageSquare, X, RefreshCw, Globe, ShieldCheck } from "lucide-react";
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<string>("landing");
@@ -198,20 +198,6 @@ export default function App() {
     }, 1100);
   };
 
-  const handleDemoMode = () => {
-    // Hackathon Demo Sequence
-    // 1. Select a high-impact location (Sector 4 - Calmarka)
-    setSelectedSectorId(4);
-    // 2. Adjust nutrition to simulate a sudden drop (Simulate isotope data)
-    handleAdjustNutrition(4, -2.5);
-    // 3. Jump to satellite map to show the issue & GPS style analysis
-    setCurrentPage("satellite");
-    // 4. Open AI Chat and simulate generating recommendation
-    setIsChatOpen(true);
-    setTimeout(() => {
-      handleSendChatMessage("Analyze the recent isotopic drop in Sector 4 and recommend GammaGrow treatments.");
-    }, 1500);
-  };
 
   const activeAlertsList = sectors.flatMap((s) => s.alerts);
   const activeAlertsCount = activeAlertsList.length;
@@ -285,14 +271,6 @@ export default function App() {
             <span className="whitespace-nowrap">{tr('ctaEnter', 'START ANALYSIS')}</span>
           </button>
 
-          {/* Demo Mode Button */}
-          <button
-            onClick={handleDemoMode}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 min-h-[44px] bg-zinc-800 hover:bg-zinc-700 text-purple-400 border border-purple-500/30 hover:border-purple-500 font-mono text-xs px-4 rounded-lg shadow-sm transition-all cursor-pointer"
-          >
-            <Sparkles className="w-4 h-4 text-purple-400" />
-            <span className="whitespace-nowrap">{tr('demoMode', 'DEMO MODE')}</span>
-          </button>
         </div>
       </div>
 

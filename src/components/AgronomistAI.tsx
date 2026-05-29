@@ -291,7 +291,7 @@ export default function AgronomistAI({ currentSector, language }: AgronomistAIPr
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={tr('askQuinoaX', 'Ask Quinoa-X Agronomist AI about isotopic metrics or Altiplano crops stress...')}
-              className="w-full bg-transparent px-4 py-4 text-sm text-zinc-100 placeholder-zinc-550 border-0 outline-none pr-12 focus:ring-1 focus:ring-emerald-500 rounded-xl"
+              className="w-full bg-[#09090b] px-4 py-4 text-sm text-zinc-100 placeholder-zinc-600 border-0 outline-none pr-12 focus:ring-1 focus:ring-emerald-500 rounded-xl caret-emerald-400"
             />
             <button
               type="submit"
@@ -307,7 +307,7 @@ export default function AgronomistAI({ currentSector, language }: AgronomistAIPr
             </button>
           </form>
           <div className="mt-2 text-[10px] text-zinc-500 font-mono text-center">
-            {tr('poweredByGemini', '*Powered by high-precision Gemini. Exclusively localized to Altiplano agro-technical sectors.')}
+            {tr('poweredByAI', '*Powered by high-precision AI. Exclusively localized to Altiplano agro-technical sectors.')}
           </div>
         </div>
 
