@@ -75,7 +75,7 @@ Answer any agriculture, soil science, or farming question. Be direct, scientific
     }));
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-1.5-flash",
       contents,
       config: {
         systemInstruction,
@@ -116,7 +116,7 @@ app.post("/api/analyze-sector", async (req, res) => {
     Use this JSON output constraint: responseMimeType: "application/json"`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-1.5-flash",
       contents: prompt,
       config: {
         systemInstruction,
