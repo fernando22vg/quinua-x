@@ -58,20 +58,10 @@ export default function App() {
   };
 
   const handleModeSelect = (mode: "basic" | "expert") => {
-    const isNew = userMode === null;
     setUserMode(mode);
     localStorage.setItem("qx-user-mode", mode);
     setShowModeModal(false);
-    
-    if (!isNew) {
-      showToast(mode === "expert" ? tr('expertModeSwitch', 'Switching to Expert Scientific View') : tr('basicModeSwitch', 'Switching to Basic Agricultural View'));
-    }
-     
-    if (mode === "basic") {
-      navigateToPage("basic-dashboard");
-    } else if (mode === "expert" && currentPage === "basic-dashboard") {
-      navigateToPage("overview");
-    }
+    navigateToPage("landing");
   };
 
   const handleLanguageSelect = (lang: Language) => {
@@ -79,6 +69,7 @@ export default function App() {
     localStorage.setItem("qx-lang", lang);
     showToast(t(lang, 'langChange', 'Language changed'));
     setShowModeModal(true);
+    navigateToPage("landing");
   };
 
   const handleResetMode = () => {
