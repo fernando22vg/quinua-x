@@ -417,7 +417,7 @@ export default function LandingView({ onNavigate, language, setLanguage, userMod
                 Latitude / Longitude: {selectedBasin.coordinates}
               </div>
               
-              <h4 className="text-xl font-bold text-[#F8FAFC] mt-4 flex items-center gap-2">
+              <h4 className="text-xl font-bold text-[#102033] mt-4 flex items-center gap-2">
                 <span>{selectedBasin.name}</span>
                 <span className="text-xs font-mono bg-[#3F7D4A]/10 text-[#3F7D4A] border border-[#3F7D4A]/20 px-2 py-0.5 rounded">
                   {selectedBasin.department} Department
@@ -926,7 +926,7 @@ export default function LandingView({ onNavigate, language, setLanguage, userMod
           <div className="lg:col-span-8 bg-[#EFE3C8]/30 border border-[#B85C38]/20 rounded-2xl p-6 md:p-8 relative">
             {!isBooked ? (
               <form onSubmit={handleBookingSubmit} className="space-y-4">
-                <h4 className="text-lg font-bold text-[#F8FAFC] uppercase tracking-wide border-b border-[#B85C38]/20 pb-3 flex items-center justify-between">
+                <h4 className="text-lg font-bold text-[#102033] uppercase tracking-wide border-b border-[#B85C38]/20 pb-3 flex items-center justify-between">
                   <span>Cooperative Trial Intake Registration</span>
                   <span className="text-xs font-mono text-[#52616B] lowercase">no payment required</span>
                 </h4>
@@ -1026,7 +1026,7 @@ export default function LandingView({ onNavigate, language, setLanguage, userMod
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
                   <div>
-                    <h5 className="text-sm font-bold text-[#F8FAFC]">Hiring Consult Request Confirmed Successfully!</h5>
+                    <h5 className="text-sm font-bold text-[#102033]">Hiring Consult Request Confirmed Successfully!</h5>
                     <p className="text-xs text-[#52616B]">Our regional agronomist from Copacabana or Challapata Hub will contact your cooperative shortly.</p>
                   </div>
                 </div>
