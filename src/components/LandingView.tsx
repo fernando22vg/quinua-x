@@ -1142,8 +1142,8 @@ export default function LandingView({ onNavigate, language, setLanguage, userMod
       {/* Interactive FAQ collapsibles */}
       <section id="faqs-accordion" className="max-w-4xl mx-auto px-6 mb-12 relative z-10">
         <div className="text-center mb-8">
-          <h4 className="text-xs font-mono text-[#3F7D4A] uppercase tracking-widest">Educational Resource Drawer</h4>
-          <h3 className="text-2xl font-bold text-[#102033] mt-1">Understanding Soil Nuclear Agronomy</h3>
+          <h4 className="text-xs font-mono text-[#3F7D4A] uppercase tracking-widest">{tr('faqSubtitle', 'Educational Resource Drawer')}</h4>
+          <h3 className="text-2xl font-bold text-[#102033] mt-1">{tr('faqTitle', 'Understanding Soil Nuclear Agronomy')}</h3>
         </div>
 
         <div className="space-y-3">

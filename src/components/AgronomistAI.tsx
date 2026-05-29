@@ -196,13 +196,13 @@ export default function AgronomistAI({ currentSector, language }: AgronomistAIPr
         <div>
           <div className="flex items-center gap-2 text-xs font-mono text-emerald-400">
             <Cpu className="w-3.5 h-3.5" />
-            <span>{tr('aiModuleTitle', 'GEMINI COGNITIVE OPTIMIZER MODULE')}</span>
+            <span>{tr('aiModuleTitle')}</span>
           </div>
           <h2 className="text-xl md:text-2xl font-bold font-sans tracking-tight text-white mt-1">
-            {tr('aiTerminal', 'Isotopic AI Agronomist Terminal')}
+            {tr('aiTerminal')}
           </h2>
           <p className="text-xs text-zinc-500 font-mono mt-0.5 leading-relaxed">
-            {tr('aiTerminalDesc', 'Real server-side AI evaluating Nitrogen-15, Oxygen-18 evaporation vectors, and crop anomalies.')}
+            {tr('aiTerminalDesc')}
           </p>
         </div>
 
@@ -222,7 +222,7 @@ export default function AgronomistAI({ currentSector, language }: AgronomistAIPr
         <div className="p-3.5 bg-zinc-900/40 border border-zinc-902 rounded-xl flex items-center justify-between gap-6 max-w-4xl mx-auto">
           <div className="font-mono text-xs text-zinc-400 flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
-            <span>{tr('aiSectorLinked', 'AI Sector Feed Linked:')} <strong className="text-zinc-200">{currentSector.name}</strong></span>
+            <span>{tr('aiSectorLinked')} <strong className="text-zinc-200">{currentSector.name}</strong></span>
           </div>
           <div className="flex gap-4 text-[11px] font-mono text-zinc-500">
             <span>Moisture: <strong className="text-emerald-400">{currentSector.moisture}%</strong></span>
@@ -277,7 +277,7 @@ export default function AgronomistAI({ currentSector, language }: AgronomistAIPr
               </div>
               <div className="bg-[#09090b]/80 border border-zinc-900/80 rounded-2xl p-4 text-[13px] font-mono text-zinc-400 flex items-center gap-2">
                 <RefreshCw className="w-3.5 h-3.5 animate-spin text-cyan-400" />
-                <span>{tr('aiGenerating', 'Generating agronomical evaluation dispatch from isotopic ratios...')}</span>
+                <span>{tr('aiGenerating')}</span>
               </div>
             </div>
           )}
@@ -330,7 +330,7 @@ export default function AgronomistAI({ currentSector, language }: AgronomistAIPr
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder={tr('askQuinoaX', 'Ask Quinoa-X Agronomist AI about isotopic metrics or Altiplano crops stress...')}
+              placeholder={tr('askQuinoaX')}
               className="ai-chat-input w-full bg-[#09090b] px-4 py-4 text-sm placeholder-zinc-600 border-0 outline-none pr-12 focus:ring-1 focus:ring-emerald-500 rounded-xl"
             />
             <button
