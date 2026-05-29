@@ -117,7 +117,7 @@ const FAQ_ITEMS = [
   },
   {
     question: "How does Oxygen-18 map evaporation versus transpiration?",
-    answer: "During warm winds, water molecules with the lighter Oxygen-16 isotope evaporate faster from the soil into the atmosphere than heavy Oxygen-18. However, plants pumping water through transpiration absorb both in specific fractions. By comparing isotopic ratios in sap water ($\delta^{18}O$) directly to soil moisture profiles, we discover exactly how much water of irrigation actually benefits crop cells vs. vaporizes into thin air."
+    answer: "During warm winds, water molecules with the lighter Oxygen-16 isotope evaporate faster from the soil into the atmosphere than heavy Oxygen-18. However, plants pumping water through transpiration absorb both in specific fractions. By comparing isotopic ratios in sap water (δ¹⁸O) directly to soil moisture profiles, we discover exactly how much water of irrigation actually benefits crop cells vs. vaporizes into thin air."
   },
   {
     question: "Do farmers need specialized heavy machinery to use this platform?",
@@ -125,7 +125,7 @@ const FAQ_ITEMS = [
   },
   {
     question: "Can these metrics prove that an organic crop is truly organic?",
-    answer: "Yes, this is one of our primary export-enablement capabilities! Synthetic chemical nitrogen fertilizers have a very narrow $\delta^{15}N$ signature around $-2‰$ to $+2‰$. In contrast, animal manure, leguminous green composts, and biological nitrogen fixation have highly enriched signatures ranging from $+8‰$ up to $+18‰$. Our mass-spectrometry database provides export buyers with absolute, unforgeable biochemical proof that no synthetic nitrogen was fed to the plants."
+    answer: "Yes, this is one of our primary export-enablement capabilities! Synthetic chemical nitrogen fertilizers have a very narrow δ¹⁵N signature around -2‰ to +2‰. In contrast, animal manure, leguminous green composts, and biological nitrogen fixation have highly enriched signatures ranging from +8‰ up to +18‰. Our mass-spectrometry database provides export buyers with absolute, unforgeable biochemical proof that no synthetic nitrogen was fed to the plants."
   }
 ];
 
@@ -1151,7 +1151,7 @@ export default function LandingView({ onNavigate, language, setLanguage, userMod
             <div key={idx} className="border border-[#B85C38]/20 rounded-xl overflow-hidden bg-[#FFFFFF] shadow-sm">
               <button
                 onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)}
-                className="w-full flex justify-between items-center p-4 text-left font-semibold text-sm text-[#F8FAFC] hover:bg-[#EFE3C8]/50 transition-all cursor-pointer"
+                className="w-full flex justify-between items-center p-4 text-left font-semibold text-sm text-[#102033] hover:bg-[#EFE3C8]/50 transition-all cursor-pointer"
               >
                 <span className="flex items-center gap-2">
                   <HelpCircle className="w-4 h-4 text-[#3F7D4A] mr-1" />

@@ -33,14 +33,9 @@ export default function App() {
   const [transitioningPage, setTransitioningPage] = useState<string | null>(null);
 
   useEffect(() => {
-    const savedMode = localStorage.getItem("qx-user-mode");
-    if (savedMode === "basic" || savedMode === "expert") {
-      setUserMode(savedMode);
-      setShowModeModal(false);
-    } else {
-      setShowModeModal(true);
-    }
-    
+    // Always show mode selection on load for demo purposes
+    setShowModeModal(true);
+
     const savedLang = localStorage.getItem("qx-lang");
     if (savedLang) {
       setLanguage(savedLang as Language);
