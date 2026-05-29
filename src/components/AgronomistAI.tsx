@@ -8,6 +8,46 @@ interface AgronomistAIProps {
   language: Language;
 }
 
+function renderMarkdown(text: string): React.ReactNode[] {
+  const lines = text.split('\n');
+  return lines.map((line, i) => {
+    // Clean LaTeX-style math: $\delta^{15}\text{N}$ → δ¹⁵N style readable text
+    line = line.replace(/\$\\delta\^\{?(\d+)\}?\\text\{([^}]+)\}\$/g, 'δ$1$2');
+    line = line.replace(/\$\\delta\^(\d+)([A-Za-z]+)\$/g, 'δ$1$2');
+    line = line.replace(/\$[^$]+\$/g, (m) => m.slice(1, -1).replace(/\\[a-z]+/g, '').replace(/[{}^_]/g, ''));
+
+    const parseInline = (str: string): React.ReactNode[] => {
+      const parts: React.ReactNode[] = [];
+      const re = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g;
+      let last = 0, match;
+      while ((match = re.exec(str)) !== null) {
+        if (match.index > last) parts.push(str.slice(last, match.index));
+        if (match[2]) parts.push(<strong key={match.index} className="text-zinc-100 font-semibold">{match[2]}</strong>);
+        else if (match[3]) parts.push(<em key={match.index}>{match[3]}</em>);
+        else if (match[4]) parts.push(<code key={match.index} className="bg-zinc-800 px-1 rounded text-emerald-400 text-xs font-mono">{match[4]}</code>);
+        last = match.index + match[0].length;
+      }
+      if (last < str.length) parts.push(str.slice(last));
+      return parts;
+    };
+
+    if (/^#{1,3} /.test(line)) {
+      const content = line.replace(/^#{1,3} /, '');
+      return <p key={i} className="font-bold text-zinc-100 mt-2">{parseInline(content)}</p>;
+    }
+    if (/^[\*\-] /.test(line)) {
+      return <li key={i} className="ml-4 list-disc">{parseInline(line.slice(2))}</li>;
+    }
+    if (/^\d+\. /.test(line)) {
+      return <li key={i} className="ml-4 list-decimal">{parseInline(line.replace(/^\d+\. /, ''))}</li>;
+    }
+    if (line.trim() === '---' || line.trim() === '') {
+      return <br key={i} />;
+    }
+    return <p key={i}>{parseInline(line)}</p>;
+  });
+}
+
 export default function AgronomistAI({ currentSector, language }: AgronomistAIProps) {
   const tr = (key: string, fallback?: string) => TRANSLATIONS[language]?.[key] || TRANSLATIONS["en"][key] || fallback || key;
   
@@ -215,8 +255,8 @@ export default function AgronomistAI({ currentSector, language }: AgronomistAIPr
                     : "bg-emerald-600 border-emerald-550 text-zinc-950 font-medium"
                   }
                 `}>
-                  <div className="whitespace-pre-wrap font-sans">
-                    {m.content}
+                  <div className="font-sans space-y-1">
+                    {isAI ? renderMarkdown(m.content) : m.content}
                   </div>
                   
                   <span className={`block text-[9px] font-mono mt-3 text-right leading-none
@@ -291,7 +331,8 @@ export default function AgronomistAI({ currentSector, language }: AgronomistAIPr
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={tr('askQuinoaX', 'Ask Quinoa-X Agronomist AI about isotopic metrics or Altiplano crops stress...')}
-              className="w-full bg-[#09090b] px-4 py-4 text-sm text-zinc-100 placeholder-zinc-600 border-0 outline-none pr-12 focus:ring-1 focus:ring-emerald-500 rounded-xl caret-emerald-400"
+              className="w-full bg-[#09090b] px-4 py-4 text-sm placeholder-zinc-600 border-0 outline-none pr-12 focus:ring-1 focus:ring-emerald-500 rounded-xl"
+              style={{ color: '#f4f4f5', caretColor: '#10b981' }}
             />
             <button
               type="submit"
