@@ -192,7 +192,16 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     optSectorLabel: "Optimize Evaporation (δ¹⁸O)",
     valN15Label: "Validate N15 Absorption",
     faqTitle: "Understanding Soil Nuclear Agronomy",
-    faqSubtitle: "Educational Resource Drawer"
+    faqSubtitle: "Educational Resource Drawer",
+    heroSloganLine1: "Atomic Intelligence for",
+    heroSloganLine2: "Sustainable Agriculture",
+    welcomeTitle: "Welcome to QUINOA-X",
+    welcomeSubtitle: "Do you have knowledge of nuclear technologies?",
+    basicModeTitle: "A. Basic Mode",
+    basicModeInfo: "For farmers or general users. Simple language, easy inputs, practical agricultural recommendations.",
+    expertModeTitle: "B. Expert Mode",
+    expertModeInfo: "For users with technical knowledge. Isotopes, gamma irradiation, thresholds, formulas and advanced parameters.",
+    modeChangeNote: "*You can change this later in the top navigation bar."
   },
   es: {
     heroSlogan: "Inteligencia Atómica para la Agricultura",
@@ -385,7 +394,16 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     optSectorLabel: "Optimizar Evaporación (δ¹⁸O)",
     valN15Label: "Validar Absorción N15",
     faqTitle: "Entendiendo la Agronomía Nuclear del Suelo",
-    faqSubtitle: "Recursos Educativos"
+    faqSubtitle: "Recursos Educativos",
+    heroSloganLine1: "Inteligencia Atómica para la",
+    heroSloganLine2: "Agricultura Sostenible",
+    welcomeTitle: "Bienvenido a QUINOA-X",
+    welcomeSubtitle: "¿Tienes conocimiento de tecnologías nucleares?",
+    basicModeTitle: "A. Modo Básico",
+    basicModeInfo: "Para agricultores o usuarios generales. Lenguaje simple, entradas fáciles, recomendaciones agrícolas prácticas.",
+    expertModeTitle: "B. Modo Experto",
+    expertModeInfo: "Para usuarios con conocimiento técnico. Isótopos, irradiación gamma, umbrales, fórmulas y parámetros avanzados.",
+    modeChangeNote: "*Puedes cambiar esto más tarde en la barra de navegación superior."
   },
   ay: {
     heroSlogan: "Atómica Yatxatawi Yapunakataki",
@@ -578,7 +596,16 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     optSectorLabel: "Thayaña Optimizar (δ¹⁸O)",
     valN15Label: "N15 Mantaña Uñjaña",
     faqTitle: "Uraq Atómica Agronomía Yatxatawi",
-    faqSubtitle: "Yatiqaña Qillqa"
+    faqSubtitle: "Yatiqaña Qillqa",
+    heroSloganLine1: "Atómica Yatxatawi",
+    heroSloganLine2: "Yapunakataki",
+    welcomeTitle: "Bienvenido QUINOA-X-ru",
+    welcomeSubtitle: "¿Nuclear yatxatawi yatsta?",
+    basicModeTitle: "A. Jasakiru Modo",
+    basicModeInfo: "Yapuchirinakaru ukhamarak taqpachanakaru. Aru jasakiwa, mantaña jasakiwa, yapu yatiyäwi jasakiwa.",
+    expertModeTitle: "B. Yatxatawi Modo",
+    expertModeInfo: "Yatxatawinaka yatiniri ukanakatakiwa. Isótopos, gamma irradiación, umbrales, fórmulas ukhamarak avanzado parámetros.",
+    modeChangeNote: "*Ukax qhipharunxa navbar patankiri mayjt'ayarakismawa."
   },
   ru: {
     heroSlogan: "Атомный интеллект для сельского хозяйства",
@@ -771,7 +798,16 @@ export const TRANSLATIONS: Record<Language, Record<string, string>> = {
     optSectorLabel: "Оптимизировать испарение (δ¹⁸O)",
     valN15Label: "Проверить поглощение N15",
     faqTitle: "Понимание ядерной агрономии почвы",
-    faqSubtitle: "Образовательные ресурсы"
+    faqSubtitle: "Образовательные ресурсы",
+    heroSloganLine1: "Атомный интеллект для",
+    heroSloganLine2: "Устойчивого земледелия",
+    welcomeTitle: "Добро пожаловать в QUINOA-X",
+    welcomeSubtitle: "У вас есть знания в области ядерных технологий?",
+    basicModeTitle: "А. Базовый режим",
+    basicModeInfo: "Для фермеров и обычных пользователей. Простой язык, простые входные данные, практические рекомендации.",
+    expertModeTitle: "Б. Экспертный режим",
+    expertModeInfo: "Для пользователей с техническими знаниями. Изотопы, гамма-облучение, пороговые значения и расширенные параметры.",
+    modeChangeNote: "*Вы можете изменить это позже в верхней навигационной панели."
   }
 };
 

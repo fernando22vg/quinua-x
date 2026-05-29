@@ -306,9 +306,9 @@ export default function LandingView({ onNavigate, language, setLanguage, userMod
           </div>
 
           <h2 className="text-4xl md:text-6xl font-extrabold text-[#102033] tracking-tight max-w-4xl font-sans leading-tight">
-            {tr('heroSlogan').split(" Sustainable ")[0]} <br />
+            {tr('heroSloganLine1')} <br />
             <span className="bg-gradient-to-r from-[#3F7D4A] to-[#D9A441] bg-clip-text text-transparent">
-              {tr('heroSlogan').split("Sustainable ")[1] || "Sustainable Agriculture"}
+              {tr('heroSloganLine2')}
             </span>
           </h2>
 

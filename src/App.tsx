@@ -78,6 +78,7 @@ export default function App() {
     setLanguage(lang);
     localStorage.setItem("qx-lang", lang);
     showToast(t(lang, 'langChange', 'Language changed'));
+    setShowModeModal(true);
   };
 
   const handleResetMode = () => {
@@ -445,8 +446,8 @@ export default function App() {
                   <Bot className="w-6 h-6" />
                 </div>
               </div>
-              <h2 className="text-2xl font-bold text-zinc-100 font-sans tracking-tight mb-2">Welcome to QUINOA-X</h2>
-              <p className="text-zinc-400 text-sm">Do you have knowledge of nuclear technologies?</p>
+              <h2 className="text-2xl font-bold text-zinc-100 font-sans tracking-tight mb-2">{tr('welcomeTitle')}</h2>
+              <p className="text-zinc-400 text-sm">{tr('welcomeSubtitle')}</p>
             </div>
 
             <div className="space-y-4">
@@ -459,8 +460,8 @@ export default function App() {
                   <User className="w-5 h-5 text-emerald-400" />
                 </div>
                 <div>
-                  <h3 className="text-emerald-400 font-bold mb-1">A. Basic Mode</h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed">For farmers or general users. Simple language, easy inputs, practical agricultural recommendations.</p>
+                  <h3 className="text-emerald-400 font-bold mb-1">{tr('basicModeTitle')}</h3>
+                  <p className="text-xs text-zinc-400 leading-relaxed">{tr('basicModeInfo')}</p>
                 </div>
               </button>
 
@@ -473,14 +474,14 @@ export default function App() {
                   <ShieldCheck className="w-5 h-5 text-purple-400" />
                 </div>
                 <div>
-                  <h3 className="text-purple-400 font-bold mb-1">B. Expert Mode</h3>
-                  <p className="text-xs text-zinc-400 leading-relaxed">For users with technical knowledge. Isotopes, gamma irradiation, thresholds, formulas and advanced parameters.</p>
+                  <h3 className="text-purple-400 font-bold mb-1">{tr('expertModeTitle')}</h3>
+                  <p className="text-xs text-zinc-400 leading-relaxed">{tr('expertModeInfo')}</p>
                 </div>
               </button>
             </div>
             
             <div className="mt-8 text-center">
-              <p className="text-[10px] text-zinc-600 font-mono">*You can change this later in the top navigation bar.</p>
+              <p className="text-[10px] text-zinc-600 font-mono">{tr('modeChangeNote')}</p>
             </div>
           </div>
         </div>
