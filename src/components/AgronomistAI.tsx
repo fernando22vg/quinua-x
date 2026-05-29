@@ -332,7 +332,7 @@ export default function AgronomistAI({ currentSector, language }: AgronomistAIPr
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={tr('askQuinoaX', 'Ask Quinoa-X Agronomist AI about isotopic metrics or Altiplano crops stress...')}
               className="w-full bg-[#09090b] px-4 py-4 text-sm placeholder-zinc-600 border-0 outline-none pr-12 focus:ring-1 focus:ring-emerald-500 rounded-xl"
-              style={{ color: '#f4f4f5', caretColor: '#10b981' }}
+              style={{ color: '#f4f4f5', caretColor: '#10b981', WebkitTextFillColor: '#f4f4f5' }}
             />
             <button
               type="submit"
