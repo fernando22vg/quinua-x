@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Language, TRANSLATIONS, t } from "../translations";
-import { Menu, X, Globe, ShieldCheck, Sparkles, MapPin } from "lucide-react";
+import { Menu, X, Globe, ShieldCheck, MapPin } from "lucide-react";
 
 interface NavbarProps {
   currentPage: string;
@@ -10,7 +10,6 @@ interface NavbarProps {
   handleResetMode: () => void;
   language: Language;
   setLanguage: (lang: Language) => void;
-  handleDemoMode: () => void;
   activeAlertsCount: number;
 }
 
@@ -22,7 +21,6 @@ export default function Navbar({
   handleResetMode,
   language,
   setLanguage,
-  handleDemoMode,
   activeAlertsCount
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -149,15 +147,6 @@ export default function Navbar({
                <MapPin className="w-4 h-4 text-white group-hover:text-[#102033]" />
             </button>
 
-            {/* Demo Button */}
-            <button
-              onClick={handleDemoMode}
-              className="flex items-center gap-1.5 bg-[#B85C38] hover:bg-[#8A4B2A] text-white border border-[#B85C38] hover:border-[#8A4B2A] font-mono text-xs px-3 py-2 rounded-lg transition-colors"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-white" />
-              <span>{tr('demoMode', 'DEMO')}</span>
-            </button>
-
             {/* Start Analysis Button */}
             <button
               onClick={() => navigate(userMode === "basic" ? "basic-dashboard" : "overview")}
@@ -235,10 +224,7 @@ export default function Navbar({
                  </button>
                </div>
 
-               <div className="grid grid-cols-2 gap-2 mt-2">
-                  <button onClick={() => { handleDemoMode(); setMobileMenuOpen(false); }} className="min-h-[44px] flex items-center justify-center gap-1.5 bg-[#B85C38] hover:bg-[#8A4B2A] text-white font-mono text-xs rounded-lg border border-[#B85C38] font-bold tracking-wide">
-                    <Sparkles className="w-4 h-4 text-white" /> DEMO
-                  </button>
+               <div className="grid grid-cols-1 gap-2 mt-2">
                   <button onClick={() => { navigate(userMode === "basic" ? "basic-dashboard" : "overview"); setMobileMenuOpen(false); }} className="min-h-[44px] flex items-center justify-center gap-1.5 bg-[#3F7D4A] hover:bg-[#20b56b] text-white font-mono text-xs font-bold rounded-lg px-2 tracking-wide border border-[#D9A441]/50 shadow-sm">
                     <ShieldCheck className="w-4 h-4" /> START
                   </button>

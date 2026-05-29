@@ -236,21 +236,6 @@ export default function App() {
     }, 1100);
   };
 
-  const handleDemoMode = () => {
-    // Hackathon Demo Sequence
-    // 1. Select a high-impact location (Sector 4 - Calmarka)
-    setSelectedSectorId(4);
-    // 2. Adjust nutrition to simulate a sudden drop (Simulate isotope data)
-    handleAdjustNutrition(4, -2.5);
-    // 3. Jump to satellite map to show the issue & GPS style analysis
-    setCurrentPage("satellite");
-    // 4. Open AI Chat and simulate generating recommendation
-    setIsChatOpen(true);
-    setTimeout(() => {
-      handleSendChatMessage("Analyze the recent isotopic drop in Sector 4 and recommend GammaGrow treatments.");
-    }, 1500);
-  };
-
   const activeAlertsList = sectors.flatMap((s) => s.alerts);
   const activeAlertsCount = activeAlertsList.length;
 
@@ -266,7 +251,6 @@ export default function App() {
         handleResetMode={handleResetMode}
         language={language}
         setLanguage={handleLanguageSelect}
-        handleDemoMode={handleDemoMode}
         activeAlertsCount={activeAlertsCount}
       />
 
